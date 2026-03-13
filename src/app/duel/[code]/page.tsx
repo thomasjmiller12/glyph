@@ -111,8 +111,10 @@ export default function DuelGamePage() {
     [currentGuess, isRoundOver, isDuelOver, duel, submitDuelGuess, sessionId, currentRound]
   );
 
-  // Physical keyboard
+  // Physical keyboard — only active during playing phase
+  const isPlayingPhase = isPlayer && duel?.duel?.status === "active" && !isPicking;
   useEffect(() => {
+    if (!isPlayingPhase) return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === "Enter") handleKey("enter");
@@ -121,7 +123,7 @@ export default function DuelGamePage() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [handleKey]);
+  }, [handleKey, isPlayingPhase]);
 
   async function handleJoin() {
     if (!name.trim()) return;

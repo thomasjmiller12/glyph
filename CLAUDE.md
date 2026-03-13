@@ -1,5 +1,26 @@
 # Glyph — Multiplayer Word Duel
 
+## CRITICAL: Git Identity
+
+**Before ANY commit or push**, ensure:
+- **Author email**: `thomasjmiller12@gmail.com` (NEVER `thomas@billables.ai` or any work email)
+- **Author name**: `Thomas Miller`
+- **GitHub account**: `thomasjmiller12` (NEVER `TMiller0112`)
+
+```bash
+# Verify before committing:
+git config user.email  # Must be thomasjmiller12@gmail.com
+gh auth status         # Active account must be thomasjmiller12
+```
+
+If the email is wrong, fix it BEFORE committing:
+```bash
+git config user.email "thomasjmiller12@gmail.com"
+git config user.name "Thomas Miller"
+```
+
+This is a personal project. Work account commits leak activity to the employer.
+
 ## Tech Stack
 - Next.js 15 (App Router) + React 19
 - Convex (database, real-time, auth, scheduled functions)

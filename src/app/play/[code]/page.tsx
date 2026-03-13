@@ -126,8 +126,9 @@ export default function PlayPage() {
     [currentGuess, isGameOver, playerGame, game, submitGuess, sessionId]
   );
 
-  // Physical keyboard listener
+  // Physical keyboard listener — only active during gameplay
   useEffect(() => {
+    if (joinState !== "playing") return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === "Enter") handleKey("enter");
@@ -136,7 +137,7 @@ export default function PlayPage() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [handleKey]);
+  }, [handleKey, joinState]);
 
   async function handleJoin() {
     if (!name.trim()) return;
