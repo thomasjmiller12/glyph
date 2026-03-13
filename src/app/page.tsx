@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { motion } from "framer-motion";
-import { ArrowRight, Swords, Plus } from "lucide-react";
+import { ArrowRight, Swords, Plus, Copy, Check } from "lucide-react";
 import Nav from "@/components/Nav";
 import { getSessionId } from "@/lib/session";
 
@@ -13,12 +13,14 @@ export default function Home() {
   const router = useRouter();
   const createGame = useMutation(api.games.createGame);
 
-  const [mode, setMode] = useState<"home" | "create" | "join">("home");
+  const [mode, setMode] = useState<"home" | "create" | "join" | "created">("home");
   const [name, setName] = useState("");
   const [word, setWord] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [createdCode, setCreatedCode] = useState("");
+  const [copied, setCopied] = useState(false);
 
   async function handleCreate() {
     if (!name.trim() || !word.trim()) return;
@@ -34,12 +36,20 @@ export default function Home() {
         secretWord: word.toLowerCase().trim(),
         sessionId: getSessionId(),
       });
-      router.push(`/play/${result.code}`);
+      setCreatedCode(result.code);
+      setMode("created");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to create game");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function copyLink() {
+    const url = `${window.location.origin}/play/${createdCode}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   function handleJoin() {
@@ -180,6 +190,56 @@ export default function Home() {
               >
                 Join
               </motion.button>
+            </motion.div>
+          )}
+          {mode === "created" && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-6 text-center"
+            >
+              <div>
+                <h2 className="text-xl font-bold text-[#E8E8E8]">Challenge Created!</h2>
+                <p className="mt-1 text-sm text-[#8B8B8B]">
+                  Share this link with your friends
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#2A2A2E] bg-[#141416] p-6">
+                <p className="mb-1 text-xs text-[#8B8B8B]">Game Code</p>
+                <p className="font-mono text-3xl font-bold tracking-[0.2em] text-[#D4A574]">
+                  {createdCode}
+                </p>
+              </div>
+
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={copyLink}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90"
+              >
+                {copied ? (
+                  <>
+                    <Check size={18} />
+                    Link Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy size={18} />
+                    Copy Challenge Link
+                  </>
+                )}
+              </motion.button>
+
+              <button
+                onClick={() => {
+                  setMode("home");
+                  setWord("");
+                  setCreatedCode("");
+                }}
+                className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]"
+              >
+                ← Create Another
+              </button>
             </motion.div>
           )}
         </motion.div>

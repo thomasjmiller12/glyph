@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import LetterTile from "./LetterTile";
 
 interface Guess {
@@ -11,13 +12,14 @@ interface GameBoardProps {
   guesses: Guess[];
   currentGuess: string;
   maxAttempts: number;
-  isRevealing?: number; // index of row currently revealing
+  shake?: boolean;
 }
 
 export default function GameBoard({
   guesses,
   currentGuess,
   maxAttempts,
+  shake = false,
 }: GameBoardProps) {
   const rows = [];
 
@@ -38,9 +40,18 @@ export default function GameBoard({
         </div>
       );
     } else if (i === guesses.length) {
-      // Current input row
+      // Current input row — with shake animation on invalid guess
       rows.push(
-        <div key={i} className="flex gap-1.5">
+        <motion.div
+          key={i}
+          className="flex gap-1.5"
+          animate={
+            shake
+              ? { x: [0, -10, 10, -10, 10, -5, 5, 0] }
+              : {}
+          }
+          transition={{ duration: 0.4 }}
+        >
           {Array.from({ length: 5 }).map((_, j) => (
             <LetterTile
               key={j}
@@ -49,7 +60,7 @@ export default function GameBoard({
               isCurrentRow={true}
             />
           ))}
-        </div>
+        </motion.div>
       );
     } else {
       // Empty future row

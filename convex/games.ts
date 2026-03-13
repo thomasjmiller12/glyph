@@ -228,6 +228,7 @@ export const getGame = query({
       game: {
         _id: game._id,
         code: game.code,
+        creatorId: game.creatorId,
         creatorName: game.creatorName,
         maxAttempts: game.maxAttempts,
         status: game.status,

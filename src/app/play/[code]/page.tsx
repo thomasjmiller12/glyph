@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { motion } from "framer-motion";
+import { Copy, Check, Users } from "lucide-react";
 import Nav from "@/components/Nav";
 import GameBoard from "@/components/GameBoard";
 import Keyboard from "@/components/Keyboard";
@@ -13,7 +14,7 @@ import { getSessionId } from "@/lib/session";
 import { aggregateLetterStates } from "@/lib/keyboard-state";
 import type { Id } from "../../../../convex/_generated/dataModel";
 
-type JoinState = "loading" | "name_entry" | "playing";
+type JoinState = "loading" | "name_entry" | "playing" | "creator";
 
 export default function PlayPage() {
   const params = useParams();
@@ -35,16 +36,30 @@ export default function PlayPage() {
   const [error, setError] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [joining, setJoining] = useState(false);
+  const [shaking, setShaking] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const isCreator = game?.game?.creatorId === sessionId;
 
   // Determine join state
   useEffect(() => {
     if (!game) return;
-    if (playerGame?.player) {
+    if (isCreator) {
+      setJoinState("creator");
+    } else if (playerGame?.player) {
       setJoinState("playing");
     } else {
       setJoinState("name_entry");
     }
-  }, [game, playerGame]);
+  }, [game, playerGame, isCreator]);
+
+  async function copyLink() {
+    const url = `${window.location.origin}/play/${code}`;
+    await navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
 
   const guesses = playerGame?.guesses ?? [];
   const isGameOver =
@@ -71,7 +86,9 @@ export default function PlayPage() {
       if (key === "enter") {
         if (currentGuess.length !== 5) {
           setError("Not enough letters");
-          setTimeout(() => setError(""), 1500);
+          setShaking(true);
+          setShakeKey((k) => k + 1);
+          setTimeout(() => { setError(""); setShaking(false); }, 1500);
           return;
         }
         if (!playerGame?.player) return;
@@ -86,8 +103,18 @@ export default function PlayPage() {
           });
           setCurrentGuess("");
         } catch (e: unknown) {
-          setError(e instanceof Error ? e.message : "Invalid word");
-          setTimeout(() => setError(""), 2000);
+          const msg = e instanceof Error ? e.message : "";
+          const friendly = msg.includes("Not a valid word")
+            ? "Not in word list"
+            : msg.includes("already solved")
+              ? "Already solved!"
+              : msg.includes("No more attempts")
+                ? "No attempts left"
+                : "Not in word list";
+          setError(friendly);
+          setShaking(true);
+          setShakeKey((k) => k + 1);
+          setTimeout(() => { setError(""); setShaking(false); }, 1500);
         }
         return;
       }
@@ -157,6 +184,55 @@ export default function PlayPage() {
     <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
       <Nav />
 
+      {joinState === "creator" && (
+        <div className="flex flex-1 flex-col items-center justify-center px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-sm space-y-6 text-center"
+          >
+            <div>
+              <h2 className="text-2xl font-bold text-[#E8E8E8]">Your Challenge</h2>
+              <p className="mt-1 text-sm text-[#8B8B8B]">
+                Share this link with friends to challenge them
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-[#2A2A2E] bg-[#141416] p-6">
+              <p className="mb-1 text-xs text-[#8B8B8B]">Game Code</p>
+              <p className="font-mono text-3xl font-bold tracking-[0.2em] text-[#D4A574]">
+                {code}
+              </p>
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={copyLink}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90"
+            >
+              {linkCopied ? (
+                <>
+                  <Check size={18} />
+                  Link Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={18} />
+                  Copy Challenge Link
+                </>
+              )}
+            </motion.button>
+
+            <div className="flex items-center justify-center gap-2 text-sm text-[#8B8B8B]">
+              <Users size={16} />
+              <span>
+                {game.playerCount} player{game.playerCount !== 1 ? "s" : ""} joined
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {joinState === "name_entry" && (
         <div className="flex flex-1 flex-col items-center justify-center px-4">
           <motion.div
@@ -168,6 +244,9 @@ export default function PlayPage() {
               {game.game.creatorName}&apos;s Challenge
             </h2>
             <p className="text-sm text-[#8B8B8B]">
+              {game.game.creatorName} chose a word for you to guess
+            </p>
+            <p className="text-xs text-[#5A5A5E]">
               {game.playerCount} player{game.playerCount !== 1 ? "s" : ""} joined
             </p>
             <input
@@ -216,9 +295,11 @@ export default function PlayPage() {
 
           {/* Game board */}
           <GameBoard
+            key={shakeKey}
             guesses={guesses}
             currentGuess={currentGuess}
             maxAttempts={game.game.maxAttempts}
+            shake={shaking}
           />
 
           {/* Keyboard */}

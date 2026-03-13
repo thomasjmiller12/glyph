@@ -5,9 +5,9 @@ import { Delete } from "lucide-react";
 import type { LetterState } from "@/lib/keyboard-state";
 
 const ROWS = [
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "backspace"],
   ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-  ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"],
+  ["z", "x", "c", "v", "b", "n", "m", "enter"],
 ];
 
 const STATE_COLORS: Record<LetterState | "unused", string> = {
