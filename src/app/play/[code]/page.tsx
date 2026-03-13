@@ -158,10 +158,10 @@ export default function PlayPage() {
 
   if (!game) {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 items-center justify-center">
-          <div className="animate-pulse text-[#8B8B8B]">Loading...</div>
+          <div className="animate-pulse text-secondary">Loading...</div>
         </div>
       </div>
     );
@@ -169,11 +169,11 @@ export default function PlayPage() {
 
   if (!game.game) {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
-          <p className="text-xl text-[#E8E8E8]">Game not found</p>
-          <p className="text-sm text-[#8B8B8B]">
+          <p className="text-xl text-primary">Game not found</p>
+          <p className="text-sm text-secondary">
             This code may be invalid or the game has expired.
           </p>
         </div>
@@ -182,7 +182,7 @@ export default function PlayPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Nav />
 
       {joinState === "creator" && (
@@ -193,15 +193,15 @@ export default function PlayPage() {
             className="w-full max-w-sm space-y-6 text-center"
           >
             <div>
-              <h2 className="text-2xl font-bold text-[#E8E8E8]">Your Challenge</h2>
-              <p className="mt-1 text-sm text-[#8B8B8B]">
+              <h2 className="text-2xl font-bold text-primary">Your Challenge</h2>
+              <p className="mt-1 text-sm text-secondary">
                 Share this link with friends to challenge them
               </p>
             </div>
 
-            <div className="rounded-xl border border-[#2A2A2E] bg-[#141416] p-6">
-              <p className="mb-1 text-xs text-[#8B8B8B]">Game Code</p>
-              <p className="font-mono text-3xl font-bold tracking-[0.2em] text-[#D4A574]">
+            <div className="rounded-xl border border-border bg-surface p-6">
+              <p className="mb-1 text-xs text-secondary">Game Code</p>
+              <p className="font-mono text-3xl font-bold tracking-[0.2em] text-accent">
                 {code}
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function PlayPage() {
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={copyLink}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)]"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent py-3 font-semibold text-background transition-all hover:opacity-90 hover:shadow-[0_0_18px_var(--color-accent-glow)]"
             >
               {linkCopied ? (
                 <>
@@ -224,7 +224,7 @@ export default function PlayPage() {
               )}
             </motion.button>
 
-            <div className="flex items-center justify-center gap-2 text-sm text-[#8B8B8B]">
+            <div className="flex items-center justify-center gap-2 text-sm text-secondary">
               <Users size={16} />
               <span>
                 {game.playerCount} player{game.playerCount !== 1 ? "s" : ""} joined
@@ -241,13 +241,13 @@ export default function PlayPage() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-sm space-y-4 text-center"
           >
-            <h2 className="text-2xl font-bold text-[#E8E8E8]">
+            <h2 className="text-2xl font-bold text-primary">
               {game.game.creatorName}&apos;s Challenge
             </h2>
-            <p className="text-sm text-[#8B8B8B]">
+            <p className="text-sm text-secondary">
               {game.game.creatorName} chose a word for you to guess
             </p>
-            <p className="text-xs text-[#5A5A5E]">
+            <p className="text-xs text-placeholder">
               {game.playerCount} player{game.playerCount !== 1 ? "s" : ""} joined
             </p>
             <input
@@ -256,7 +256,7 @@ export default function PlayPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleJoin()}
-              className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 text-center text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+              className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-center text-primary placeholder-placeholder outline-none focus:border-accent"
               maxLength={20}
               autoFocus
             />
@@ -265,7 +265,7 @@ export default function PlayPage() {
               whileTap={{ scale: 0.98 }}
               onClick={handleJoin}
               disabled={!name.trim() || joining}
-              className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)] disabled:opacity-50"
+              className="w-full rounded-lg bg-accent py-3 font-semibold text-background transition-all hover:opacity-90 hover:shadow-[0_0_18px_var(--color-accent-glow)] disabled:opacity-50"
             >
               {joining ? "Joining..." : "Play"}
             </motion.button>
@@ -277,7 +277,7 @@ export default function PlayPage() {
         <div className="flex flex-1 flex-col items-center justify-between gap-4 px-4 py-4">
           {/* Header info */}
           <div className="text-center">
-            <p className="text-xs text-[#8B8B8B]">
+            <p className="text-xs text-secondary">
               Challenge by {game.game.creatorName}
             </p>
           </div>
@@ -288,7 +288,7 @@ export default function PlayPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-lg border border-[#3A3A3E]/50 bg-[#2A2A2E]/80 px-4 py-2 text-sm text-[#E8E8E8] shadow-[0_0_12px_rgba(0,0,0,0.3)] backdrop-blur-sm"
+              className="rounded-lg border border-error/50 bg-border/80 px-4 py-2 text-sm text-primary shadow-[0_0_12px_rgba(0,0,0,0.3)] backdrop-blur-sm"
             >
               {error}
             </motion.div>

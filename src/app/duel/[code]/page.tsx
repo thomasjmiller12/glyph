@@ -162,10 +162,10 @@ export default function DuelGamePage() {
 
   if (!duel) {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 items-center justify-center">
-          <div className="animate-pulse text-[#8B8B8B]">Loading...</div>
+          <div className="animate-pulse text-secondary">Loading...</div>
         </div>
       </div>
     );
@@ -173,10 +173,10 @@ export default function DuelGamePage() {
 
   if (!duel.duel) {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
-          <p className="text-xl text-[#E8E8E8]">Duel not found</p>
+          <p className="text-xl text-primary">Duel not found</p>
         </div>
       </div>
     );
@@ -185,7 +185,7 @@ export default function DuelGamePage() {
   // Not yet a player - show join form
   if (!isPlayer && duel.duel.status === "waiting") {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 flex-col items-center justify-center px-4">
           <motion.div
@@ -193,10 +193,10 @@ export default function DuelGamePage() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-sm space-y-4 text-center"
           >
-            <h2 className="text-2xl font-bold text-[#E8E8E8]">
+            <h2 className="text-2xl font-bold text-primary">
               {duel.duel.hostName}&apos;s Duel
             </h2>
-            <p className="text-sm text-[#8B8B8B]">
+            <p className="text-sm text-secondary">
               {duel.duel.mode === "same_word" ? "Same Word" : "Pick Words"} · Best of 3
             </p>
             <input
@@ -205,7 +205,7 @@ export default function DuelGamePage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleJoin()}
-              className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 text-center text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+              className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-center text-primary placeholder-placeholder outline-none focus:border-accent"
               maxLength={20}
               autoFocus
             />
@@ -214,7 +214,7 @@ export default function DuelGamePage() {
               whileTap={{ scale: 0.98 }}
               onClick={handleJoin}
               disabled={!name.trim() || joining}
-              className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="w-full rounded-lg bg-accent py-3 font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {joining ? "Joining..." : "Accept Duel"}
             </motion.button>
@@ -227,7 +227,7 @@ export default function DuelGamePage() {
   // Waiting for opponent (host view)
   if (duel.duel.status === "waiting" && isHost) {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <DuelLobby
           code={code}
@@ -251,10 +251,10 @@ export default function DuelGamePage() {
           : "Tie";
 
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
-          <h2 className="text-3xl font-bold text-[#E8E8E8]">Duel Complete!</h2>
+          <h2 className="text-3xl font-bold text-primary">Duel Complete!</h2>
           <DuelScoreboard
             hostName={duel.duel.hostName}
             guestName={duel.duel.guestName ?? "Guest"}
@@ -262,7 +262,7 @@ export default function DuelGamePage() {
             currentRound={duel.duel.totalRounds}
             totalRounds={duel.duel.totalRounds}
           />
-          <p className="text-xl font-bold text-[#D4A574]">
+          <p className="text-xl font-bold text-accent">
             {winner === "Tie" ? "It's a tie!" : `${winner} wins!`}
           </p>
         </div>
@@ -273,7 +273,7 @@ export default function DuelGamePage() {
   // Picking phase
   if (isPicking) {
     return (
-      <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
           <DuelScoreboard
@@ -284,8 +284,8 @@ export default function DuelGamePage() {
             totalRounds={duel.duel.totalRounds}
           />
           <div className="text-center">
-            <h2 className="mb-2 text-xl font-bold text-[#E8E8E8]">Pick a Word</h2>
-            <p className="text-sm text-[#8B8B8B]">
+            <h2 className="mb-2 text-xl font-bold text-primary">Pick a Word</h2>
+            <p className="text-sm text-secondary">
               Choose a 5-letter word for your opponent to solve
             </p>
           </div>
@@ -296,7 +296,7 @@ export default function DuelGamePage() {
             onChange={(e) =>
               setPickingWord(e.target.value.replace(/[^a-zA-Z]/g, "").slice(0, 5))
             }
-            className="w-full max-w-xs rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 font-mono text-center text-2xl uppercase tracking-widest text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+            className="w-full max-w-xs rounded-lg border border-border bg-surface px-4 py-3 font-mono text-center text-2xl uppercase tracking-widest text-primary placeholder-placeholder outline-none focus:border-accent"
             maxLength={5}
           />
           {error && <p className="text-sm text-red-400">{error}</p>}
@@ -304,7 +304,7 @@ export default function DuelGamePage() {
             whileTap={{ scale: 0.98 }}
             onClick={handlePickWord}
             disabled={pickingWord.length !== 5}
-            className="rounded-lg bg-[#D4A574] px-8 py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="rounded-lg bg-accent px-8 py-3 font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             Submit Word
           </motion.button>
@@ -315,7 +315,7 @@ export default function DuelGamePage() {
 
   // Playing phase
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Nav />
       <div className="flex flex-1 flex-col items-center justify-between gap-4 px-4 py-4">
         <DuelScoreboard
@@ -330,7 +330,7 @@ export default function DuelGamePage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-lg bg-[#2A2A2E] px-4 py-2 text-sm text-[#E8E8E8]"
+            className="rounded-lg bg-border px-4 py-2 text-sm text-primary"
           >
             {error}
           </motion.div>
@@ -338,7 +338,7 @@ export default function DuelGamePage() {
 
         {isRoundOver ? (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-[#8B8B8B]">Waiting for opponent to finish...</p>
+            <p className="text-secondary">Waiting for opponent to finish...</p>
           </div>
         ) : (
           <>

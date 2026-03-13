@@ -43,7 +43,7 @@ export default function DuelPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Nav />
       <main className="flex flex-1 flex-col items-center justify-center px-4">
         <motion.div
@@ -52,8 +52,8 @@ export default function DuelPage() {
           className="w-full max-w-md"
         >
           <div className="mb-8 text-center">
-            <h1 className="mb-2 text-3xl font-bold text-[#E8E8E8]">Duel Mode</h1>
-            <p className="text-sm text-[#8B8B8B]">
+            <h1 className="mb-2 text-3xl font-bold text-primary">Duel Mode</h1>
+            <p className="text-sm text-secondary">
               Head-to-head. 3 rounds. Fewest guesses wins.
             </p>
           </div>
@@ -63,21 +63,21 @@ export default function DuelPage() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setView("create")}
-                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+                className="flex w-full items-center justify-between rounded-xl border border-border bg-surface p-4 text-left transition-colors hover:border-accent"
               >
                 <div>
-                  <p className="font-medium text-[#E8E8E8]">Create Duel</p>
-                  <p className="text-sm text-[#8B8B8B]">Start a new duel and invite an opponent</p>
+                  <p className="font-medium text-primary">Create Duel</p>
+                  <p className="text-sm text-secondary">Start a new duel and invite an opponent</p>
                 </div>
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setView("join")}
-                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+                className="flex w-full items-center justify-between rounded-xl border border-border bg-surface p-4 text-left transition-colors hover:border-accent"
               >
                 <div>
-                  <p className="font-medium text-[#E8E8E8]">Join Duel</p>
-                  <p className="text-sm text-[#8B8B8B]">Enter a code to join an existing duel</p>
+                  <p className="font-medium text-primary">Join Duel</p>
+                  <p className="text-sm text-secondary">Enter a code to join an existing duel</p>
                 </div>
               </motion.button>
             </div>
@@ -85,28 +85,28 @@ export default function DuelPage() {
 
           {view === "create" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <button onClick={() => { setView("home"); setError(""); }} className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]">
+              <button onClick={() => { setView("home"); setError(""); }} className="text-sm text-secondary hover:text-primary">
                 ← Back
               </button>
-              <h2 className="text-xl font-bold text-[#E8E8E8]">Create Duel</h2>
+              <h2 className="text-xl font-bold text-primary">Create Duel</h2>
               <input
                 type="text"
                 placeholder="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-primary placeholder-placeholder outline-none focus:border-accent"
                 maxLength={20}
               />
 
               <div className="space-y-2">
-                <p className="text-sm text-[#8B8B8B]">Game Mode</p>
+                <p className="text-sm text-secondary">Game Mode</p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setMode("same_word")}
                     className={`rounded-lg border p-3 text-left text-sm transition-colors ${
                       mode === "same_word"
-                        ? "border-[#D4A574] bg-[#D4A574]/10 text-[#E8E8E8]"
-                        : "border-[#2A2A2E] bg-[#141416] text-[#8B8B8B]"
+                        ? "border-accent bg-accent/10 text-primary"
+                        : "border-border bg-surface text-secondary"
                     }`}
                   >
                     <p className="font-medium">Same Word</p>
@@ -116,8 +116,8 @@ export default function DuelPage() {
                     onClick={() => setMode("pick_words")}
                     className={`rounded-lg border p-3 text-left text-sm transition-colors ${
                       mode === "pick_words"
-                        ? "border-[#D4A574] bg-[#D4A574]/10 text-[#E8E8E8]"
-                        : "border-[#2A2A2E] bg-[#141416] text-[#8B8B8B]"
+                        ? "border-accent bg-accent/10 text-primary"
+                        : "border-border bg-surface text-secondary"
                     }`}
                   >
                     <p className="font-medium">Pick Words</p>
@@ -131,7 +131,7 @@ export default function DuelPage() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleCreate}
                 disabled={loading || !name.trim()}
-                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="w-full rounded-lg bg-accent py-3 font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create Duel"}
               </motion.button>
@@ -140,23 +140,23 @@ export default function DuelPage() {
 
           {view === "join" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <button onClick={() => { setView("home"); setError(""); }} className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]">
+              <button onClick={() => { setView("home"); setError(""); }} className="text-sm text-secondary hover:text-primary">
                 ← Back
               </button>
-              <h2 className="text-xl font-bold text-[#E8E8E8]">Join Duel</h2>
+              <h2 className="text-xl font-bold text-primary">Join Duel</h2>
               <input
                 type="text"
                 placeholder="Enter duel code"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6))}
-                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 font-mono text-center text-2xl uppercase tracking-[0.3em] text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                className="w-full rounded-lg border border-border bg-surface px-4 py-3 font-mono text-center text-2xl uppercase tracking-[0.3em] text-primary placeholder-placeholder outline-none focus:border-accent"
                 maxLength={6}
               />
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={handleJoin}
                 disabled={joinCode.length < 4}
-                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="w-full rounded-lg bg-accent py-3 font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 Join
               </motion.button>

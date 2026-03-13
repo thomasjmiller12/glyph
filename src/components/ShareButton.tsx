@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, Share2 } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { shareResult } from "@/lib/share";
 
 interface ShareButtonProps {
@@ -26,9 +26,9 @@ export default function ShareButton({
 
   return (
     <motion.button
-      whileTap={{ scale: 0.95, boxShadow: "0 0 24px rgba(212, 165, 116, 0.5)" }}
+      whileTap={{ scale: 0.95, boxShadow: "0 0 24px var(--color-accent-glow)" }}
       onClick={handleShare}
-      className="flex items-center gap-2 rounded-lg bg-[#D4A574] px-5 py-2.5 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)]"
+      className="flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 font-semibold text-background transition-all hover:opacity-90 hover:shadow-[0_0_18px_var(--color-accent-glow)]"
     >
       {copied ? (
         <>

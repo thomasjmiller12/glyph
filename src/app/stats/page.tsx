@@ -11,10 +11,10 @@ export default function StatsPage() {
   const stats = useQuery(api.stats.getStats, sessionId ? { sessionId } : "skip");
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Nav />
       <main className="flex flex-1 flex-col items-center px-4 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-[#E8E8E8]">Your Stats</h1>
+        <h1 className="mb-6 text-2xl font-bold text-primary">Your Stats</h1>
         {stats ? (
           <StatsCard
             gamesPlayed={stats.gamesPlayed}
@@ -27,7 +27,7 @@ export default function StatsPage() {
           />
         ) : (
           <div className="text-center">
-            <p className="text-[#8B8B8B]">No stats yet. Play some games!</p>
+            <p className="text-secondary">No stats yet. Play some games!</p>
           </div>
         )}
       </main>

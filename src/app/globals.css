@@ -1,16 +1,149 @@
 @import "tailwindcss";
 
-@theme inline {
+/* ── Theme Palettes ── */
+
+:root,
+[data-theme="dark"] {
   --color-background: #0A0A0B;
   --color-surface: #141416;
   --color-border: #2A2A2E;
   --color-primary: #E8E8E8;
   --color-secondary: #8B8B8B;
   --color-accent: #D4A574;
+  --color-accent-hover: rgba(212, 165, 116, 0.6);
+  --color-accent-glow: rgba(212, 165, 116, 0.15);
   --color-success: #6BCB77;
+  --color-success-glow: rgba(107, 203, 119, 0.45);
   --color-warning: #D4A574;
+  --color-warning-glow: rgba(212, 165, 116, 0.45);
   --color-error: #3A3A3E;
-  --color-glow: rgba(212, 165, 116, 0.15);
+  --color-error-text: #8B8B8B;
+  --color-key-bg: #4A4A4E;
+  --color-tile-tbd-border: #4A4A4E;
+  --color-placeholder: #5A5A5E;
+  --color-shimmer-highlight: #f0d4a8;
+  --color-particle: rgba(212, 165, 116, 0.6);
+  --color-ambient-1: rgba(212, 165, 116, 0.06);
+  --color-ambient-2: rgba(107, 203, 119, 0.03);
+  --color-ambient-3: rgba(212, 165, 116, 0.03);
+  --color-confetti-1: #6BCB77;
+  --color-confetti-2: #D4A574;
+  --color-confetti-3: #E8E8E8;
+  --color-confetti-4: #f0d4a8;
+  --color-confetti-5: #8BD5E8;
+  --color-confetti-6: #8B8B8B;
+}
+
+[data-theme="ocean"] {
+  --color-background: #060C10;
+  --color-surface: #0C161C;
+  --color-border: #152838;
+  --color-primary: #D8EAF4;
+  --color-secondary: #6B9AB8;
+  --color-accent: #22D3EE;
+  --color-accent-hover: rgba(34, 211, 238, 0.6);
+  --color-accent-glow: rgba(34, 211, 238, 0.15);
+  --color-success: #6BCB77;
+  --color-success-glow: rgba(107, 203, 119, 0.45);
+  --color-warning: #22D3EE;
+  --color-warning-glow: rgba(34, 211, 238, 0.45);
+  --color-error: #152838;
+  --color-error-text: #4A7890;
+  --color-key-bg: #1E3A50;
+  --color-tile-tbd-border: #2A4A60;
+  --color-placeholder: #3A6080;
+  --color-shimmer-highlight: #7DD3FC;
+  --color-particle: rgba(34, 211, 238, 0.5);
+  --color-ambient-1: rgba(34, 211, 238, 0.06);
+  --color-ambient-2: rgba(107, 203, 119, 0.03);
+  --color-ambient-3: rgba(56, 189, 248, 0.03);
+  --color-confetti-1: #6BCB77;
+  --color-confetti-2: #22D3EE;
+  --color-confetti-3: #D8EAF4;
+  --color-confetti-4: #7DD3FC;
+  --color-confetti-5: #38BDF8;
+  --color-confetti-6: #6B9AB8;
+}
+
+[data-theme="playful"] {
+  --color-background: #F8F0FA;
+  --color-surface: #FFFFFF;
+  --color-border: #E8D8F0;
+  --color-primary: #2A1830;
+  --color-secondary: #8870A0;
+  --color-accent: #E040A0;
+  --color-accent-hover: rgba(224, 64, 160, 0.6);
+  --color-accent-glow: rgba(224, 64, 160, 0.15);
+  --color-success: #30B860;
+  --color-success-glow: rgba(48, 184, 96, 0.45);
+  --color-warning: #E040A0;
+  --color-warning-glow: rgba(224, 64, 160, 0.45);
+  --color-error: #E0D5E8;
+  --color-error-text: #A090B0;
+  --color-key-bg: #EDE0F4;
+  --color-tile-tbd-border: #C8B0D8;
+  --color-placeholder: #B098C0;
+  --color-shimmer-highlight: #FF70C0;
+  --color-particle: rgba(224, 64, 160, 0.35);
+  --color-ambient-1: rgba(224, 64, 160, 0.06);
+  --color-ambient-2: rgba(48, 184, 96, 0.03);
+  --color-ambient-3: rgba(160, 96, 208, 0.04);
+  --color-confetti-1: #30B860;
+  --color-confetti-2: #E040A0;
+  --color-confetti-3: #2A1830;
+  --color-confetti-4: #FF70C0;
+  --color-confetti-5: #A060D0;
+  --color-confetti-6: #8870A0;
+}
+
+[data-theme="light"] {
+  --color-background: #F8F2E8;
+  --color-surface: #FFFCF5;
+  --color-border: #E0D4C0;
+  --color-primary: #3A3028;
+  --color-secondary: #907860;
+  --color-accent: #C47838;
+  --color-accent-hover: rgba(196, 120, 56, 0.6);
+  --color-accent-glow: rgba(196, 120, 56, 0.15);
+  --color-success: #6B9E50;
+  --color-success-glow: rgba(107, 158, 80, 0.45);
+  --color-warning: #C47838;
+  --color-warning-glow: rgba(196, 120, 56, 0.45);
+  --color-error: #E0D8C8;
+  --color-error-text: #A89880;
+  --color-key-bg: #EAE0D0;
+  --color-tile-tbd-border: #C8B8A0;
+  --color-placeholder: #B0A088;
+  --color-shimmer-highlight: #E8A060;
+  --color-particle: rgba(196, 120, 56, 0.4);
+  --color-ambient-1: rgba(196, 120, 56, 0.05);
+  --color-ambient-2: rgba(107, 158, 80, 0.03);
+  --color-ambient-3: rgba(196, 120, 56, 0.03);
+  --color-confetti-1: #6B9E50;
+  --color-confetti-2: #C47838;
+  --color-confetti-3: #3A3028;
+  --color-confetti-4: #E8A060;
+  --color-confetti-5: #D4A574;
+  --color-confetti-6: #907860;
+}
+
+/* ── Tailwind Theme Bridge ── */
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-error-text: var(--color-error-text);
+  --color-key-bg: var(--color-key-bg);
+  --color-tile-tbd-border: var(--color-tile-tbd-border);
+  --color-placeholder: var(--color-placeholder);
+  --color-glow: var(--color-accent-glow);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -33,9 +166,9 @@
     z-index: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 60% 50% at 50% 40%, rgba(212, 165, 116, 0.06) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 30% at 30% 70%, rgba(107, 203, 119, 0.03) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 30% at 70% 80%, rgba(212, 165, 116, 0.03) 0%, transparent 60%);
+      radial-gradient(ellipse 60% 50% at 50% 40%, var(--color-ambient-1) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 30% 70%, var(--color-ambient-2) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 70% 80%, var(--color-ambient-3) 0%, transparent 60%);
     animation: ambientPulse 8s ease-in-out infinite alternate;
   }
 
@@ -66,8 +199,8 @@
   }
 
   @keyframes activeRowPulse {
-    0%, 100% { border-color: #3A3A3E; }
-    50% { border-color: rgba(212, 165, 116, 0.35); }
+    0%, 100% { border-color: var(--color-border); }
+    50% { border-color: var(--color-accent-hover); }
   }
 
   @keyframes particleFloat1 {
@@ -97,11 +230,11 @@
 @utility logo-shimmer {
   background: linear-gradient(
     90deg,
-    #D4A574 0%,
-    #D4A574 35%,
-    #f0d4a8 50%,
-    #D4A574 65%,
-    #D4A574 100%
+    var(--color-accent) 0%,
+    var(--color-accent) 35%,
+    var(--color-shimmer-highlight) 50%,
+    var(--color-accent) 65%,
+    var(--color-accent) 100%
   );
   background-size: 200% 100%;
   -webkit-background-clip: text;

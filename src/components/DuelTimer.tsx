@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useThemeColors } from "@/lib/theme-colors";
 
 interface DuelTimerProps {
-  endTime: number; // timestamp in ms
+  endTime: number;
   onExpire?: () => void;
 }
 
@@ -12,6 +13,7 @@ export default function DuelTimer({ endTime, onExpire }: DuelTimerProps) {
   const [remaining, setRemaining] = useState(
     Math.max(0, Math.ceil((endTime - Date.now()) / 1000))
   );
+  const colors = useThemeColors();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,7 +33,7 @@ export default function DuelTimer({ endTime, onExpire }: DuelTimerProps) {
   const offset = circumference * (1 - Math.min(1, fraction));
 
   const color =
-    remaining <= 10 ? "#ef4444" : remaining <= 30 ? "#D4A574" : "#E8E8E8";
+    remaining <= 10 ? "#ef4444" : remaining <= 30 ? colors.accent : colors.primary;
 
   return (
     <div className="relative flex h-20 w-20 items-center justify-center">
@@ -41,7 +43,7 @@ export default function DuelTimer({ endTime, onExpire }: DuelTimerProps) {
           cy="40"
           r="36"
           fill="none"
-          stroke="#2A2A2E"
+          stroke={colors.border}
           strokeWidth="3"
         />
         <motion.circle

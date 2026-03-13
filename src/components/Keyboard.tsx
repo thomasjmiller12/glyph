@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Delete } from "lucide-react";
 import type { LetterState } from "@/lib/keyboard-state";
+import { useThemeColors } from "@/lib/theme-colors";
 
 const ROWS = [
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "backspace"],
@@ -11,17 +12,10 @@ const ROWS = [
 ];
 
 const STATE_COLORS: Record<LetterState | "unused", string> = {
-  unused: "bg-[#4A4A4E] text-[#E8E8E8]",
-  correct: "bg-[#6BCB77] text-[#0A0A0B]",
-  present: "bg-[#D4A574] text-[#0A0A0B]",
-  absent: "bg-[#2A2A2E] text-[#5A5A5E]",
-};
-
-const STATE_GLOW: Record<LetterState | "unused", string | undefined> = {
-  unused: undefined,
-  correct: "0 0 10px rgba(107, 203, 119, 0.35), 0 0 3px rgba(107, 203, 119, 0.15)",
-  present: "0 0 10px rgba(212, 165, 116, 0.35), 0 0 3px rgba(212, 165, 116, 0.15)",
-  absent: undefined,
+  unused: "bg-key-bg text-primary",
+  correct: "bg-success text-background",
+  present: "bg-warning text-background",
+  absent: "bg-border text-placeholder",
 };
 
 interface KeyboardProps {
@@ -35,6 +29,15 @@ export default function Keyboard({
   onKey,
   disabled = false,
 }: KeyboardProps) {
+  const colors = useThemeColors();
+
+  const glowMap: Record<LetterState | "unused", string | undefined> = {
+    unused: undefined,
+    correct: `0 0 10px ${colors.successGlow}, 0 0 3px ${colors.successGlow}`,
+    present: `0 0 10px ${colors.warningGlow}, 0 0 3px ${colors.warningGlow}`,
+    absent: undefined,
+  };
+
   return (
     <div className="flex flex-col items-center gap-1.5">
       {ROWS.map((row, i) => (
@@ -42,7 +45,7 @@ export default function Keyboard({
           {row.map((key) => {
             const isSpecial = key === "enter" || key === "backspace";
             const state = letterStates[key] ?? "unused";
-            const glow = isSpecial ? undefined : STATE_GLOW[state];
+            const glow = isSpecial ? undefined : glowMap[state];
             return (
               <motion.button
                 key={key}
@@ -51,7 +54,7 @@ export default function Keyboard({
                 disabled={disabled}
                 className={`flex h-[52px] items-center justify-center rounded-md font-mono text-sm font-semibold uppercase transition-all duration-200 sm:h-[56px] ${
                   isSpecial
-                    ? "w-[52px] bg-[#4A4A4E] text-[#E8E8E8] sm:w-[65px]"
+                    ? "w-[52px] bg-key-bg text-primary sm:w-[65px]"
                     : `w-[32px] sm:w-[40px] ${STATE_COLORS[state]}`
                 } ${disabled ? "opacity-50" : ""}`}
                 style={{ boxShadow: glow }}

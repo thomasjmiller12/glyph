@@ -1,23 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useThemeColors } from "@/lib/theme-colors";
 
 type TileState = "empty" | "tbd" | "correct" | "present" | "absent";
 
 const STATE_COLORS: Record<TileState, string> = {
-  empty: "border-[#2A2A2E] bg-transparent",
-  tbd: "border-[#4A4A4E] bg-transparent",
-  correct: "border-[#6BCB77] bg-[#6BCB77] text-[#0A0A0B]",
-  present: "border-[#D4A574] bg-[#D4A574] text-[#0A0A0B]",
-  absent: "border-[#3A3A3E] bg-[#3A3A3E] text-[#8B8B8B]",
-};
-
-const STATE_GLOW: Record<TileState, string> = {
-  empty: "",
-  tbd: "",
-  correct: "0 0 14px rgba(107, 203, 119, 0.45), 0 0 4px rgba(107, 203, 119, 0.2)",
-  present: "0 0 14px rgba(212, 165, 116, 0.45), 0 0 4px rgba(212, 165, 116, 0.2)",
-  absent: "",
+  empty: "border-border bg-transparent",
+  tbd: "border-tile-tbd-border bg-transparent",
+  correct: "border-success bg-success text-background",
+  present: "border-warning bg-warning text-background",
+  absent: "border-error bg-error text-error-text",
 };
 
 interface LetterTileProps {
@@ -33,8 +26,17 @@ export default function LetterTile({
   delay = 0,
   isCurrentRow = false,
 }: LetterTileProps) {
+  const colors = useThemeColors();
   const isRevealed = state !== "empty" && state !== "tbd";
-  const glow = STATE_GLOW[state];
+
+  const glowMap: Record<TileState, string> = {
+    empty: "",
+    tbd: "",
+    correct: `0 0 14px ${colors.successGlow}, 0 0 4px ${colors.successGlow}`,
+    present: `0 0 14px ${colors.warningGlow}, 0 0 4px ${colors.warningGlow}`,
+    absent: "",
+  };
+  const glow = glowMap[state];
 
   return (
     <motion.div
@@ -44,7 +46,7 @@ export default function LetterTile({
       initial={false}
       animate={
         isCurrentRow && letter
-          ? { scale: [1, 1.1, 1], borderColor: "rgba(212, 165, 116, 0.5)" }
+          ? { scale: [1, 1.1, 1], borderColor: colors.accentHover }
           : isRevealed
             ? {
                 rotateX: [0, 90, 0],

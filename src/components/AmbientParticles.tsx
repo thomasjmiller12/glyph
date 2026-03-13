@@ -27,7 +27,7 @@ export default function AmbientParticles() {
             bottom: p.bottom,
             width: p.size,
             height: p.size,
-            backgroundColor: "rgba(212, 165, 116, 0.6)",
+            backgroundColor: "var(--color-particle)",
             animation: `${p.anim} ${p.duration} ${p.delay} ease-in-out infinite`,
           }}
         />

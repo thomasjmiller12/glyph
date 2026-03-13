@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const COLORS = ["#6BCB77", "#D4A574", "#E8E8E8", "#f0d4a8", "#8BD5E8", "#8B8B8B"];
+import { useThemeColors } from "@/lib/theme-colors";
 
 type ParticleShape = "rect" | "circle" | "diamond";
 
@@ -21,19 +20,20 @@ interface Particle {
 export default function Confetti({ show }: { show: boolean }) {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [flash, setFlash] = useState(false);
+  const colors = useThemeColors();
 
   useEffect(() => {
     if (!show) return;
 
-    // Screen flash
     setFlash(true);
     const flashTimer = setTimeout(() => setFlash(false), 400);
 
     const shapes: ParticleShape[] = ["rect", "circle", "diamond"];
+    const confettiColors = colors.confetti;
     const p: Particle[] = Array.from({ length: 70 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
       delay: Math.random() * 0.5,
       rotation: Math.random() * 360,
       size: 4 + Math.random() * 7,
@@ -46,11 +46,10 @@ export default function Confetti({ show }: { show: boolean }) {
       clearTimeout(timer);
       clearTimeout(flashTimer);
     };
-  }, [show]);
+  }, [show, colors.confetti]);
 
   return (
     <>
-      {/* Win flash overlay */}
       <AnimatePresence>
         {flash && (
           <motion.div
@@ -60,13 +59,12 @@ export default function Confetti({ show }: { show: boolean }) {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="pointer-events-none fixed inset-0 z-50"
             style={{
-              background: "radial-gradient(circle at 50% 40%, rgba(212, 165, 116, 0.3) 0%, transparent 70%)",
+              background: `radial-gradient(circle at 50% 40%, var(--color-accent-glow) 0%, transparent 70%)`,
             }}
           />
         )}
       </AnimatePresence>
 
-      {/* Confetti particles */}
       <AnimatePresence>
         {particles.map((p) => (
           <motion.div

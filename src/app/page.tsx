@@ -58,7 +58,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Nav />
       <main className="flex flex-1 flex-col items-center justify-center px-4">
         <motion.div
@@ -71,7 +71,7 @@ export default function Home() {
             <h1 className="logo-shimmer mb-2 font-mono text-5xl font-bold tracking-tight">
               GLYPH
             </h1>
-            <p className="text-lg text-[#8B8B8B]">Five letters. One winner.</p>
+            <p className="text-lg text-secondary">Five letters. One winner.</p>
           </div>
 
           {mode === "home" && (
@@ -79,43 +79,43 @@ export default function Home() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setMode("create")}
-                className="group flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-all duration-300 hover:border-[#D4A574]/60 hover:shadow-[0_0_20px_rgba(212,165,116,0.12)]"
+                className="group flex w-full items-center justify-between rounded-xl border border-border bg-surface p-4 text-left transition-all duration-300 hover:border-accent/60 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
               >
                 <div>
-                  <p className="font-medium text-[#E8E8E8]">Create Challenge</p>
-                  <p className="text-sm text-[#8B8B8B]">
+                  <p className="font-medium text-primary">Create Challenge</p>
+                  <p className="text-sm text-secondary">
                     Pick a word for your friends to guess
                   </p>
                 </div>
-                <Plus size={20} className="text-[#D4A574] transition-transform duration-300 group-hover:scale-110" />
+                <Plus size={20} className="text-accent transition-transform duration-300 group-hover:scale-110" />
               </motion.button>
 
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setMode("join")}
-                className="group flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-all duration-300 hover:border-[#D4A574]/60 hover:shadow-[0_0_20px_rgba(212,165,116,0.12)]"
+                className="group flex w-full items-center justify-between rounded-xl border border-border bg-surface p-4 text-left transition-all duration-300 hover:border-accent/60 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
               >
                 <div>
-                  <p className="font-medium text-[#E8E8E8]">Join Game</p>
-                  <p className="text-sm text-[#8B8B8B]">
+                  <p className="font-medium text-primary">Join Game</p>
+                  <p className="text-sm text-secondary">
                     Enter a code to play a challenge
                   </p>
                 </div>
-                <ArrowRight size={20} className="text-[#D4A574] transition-transform duration-300 group-hover:translate-x-0.5" />
+                <ArrowRight size={20} className="text-accent transition-transform duration-300 group-hover:translate-x-0.5" />
               </motion.button>
 
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => router.push("/duel")}
-                className="group flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-all duration-300 hover:border-[#D4A574]/60 hover:shadow-[0_0_20px_rgba(212,165,116,0.12)]"
+                className="group flex w-full items-center justify-between rounded-xl border border-border bg-surface p-4 text-left transition-all duration-300 hover:border-accent/60 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
               >
                 <div>
-                  <p className="font-medium text-[#E8E8E8]">Duel Mode</p>
-                  <p className="text-sm text-[#8B8B8B]">
+                  <p className="font-medium text-primary">Duel Mode</p>
+                  <p className="text-sm text-secondary">
                     Head-to-head competitive play
                   </p>
                 </div>
-                <Swords size={20} className="text-[#D4A574] transition-transform duration-300 group-hover:scale-110" />
+                <Swords size={20} className="text-accent transition-transform duration-300 group-hover:scale-110" />
               </motion.button>
             </div>
           )}
@@ -128,17 +128,17 @@ export default function Home() {
             >
               <button
                 onClick={() => { setMode("home"); setError(""); }}
-                className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]"
+                className="text-sm text-secondary hover:text-primary"
               >
                 ← Back
               </button>
-              <h2 className="text-xl font-bold text-[#E8E8E8]">Create Challenge</h2>
+              <h2 className="text-xl font-bold text-primary">Create Challenge</h2>
               <input
                 type="text"
                 placeholder="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-primary placeholder-placeholder outline-none focus:border-accent"
                 maxLength={20}
               />
               <input
@@ -146,7 +146,7 @@ export default function Home() {
                 placeholder="Pick a 5-letter word"
                 value={word}
                 onChange={(e) => setWord(e.target.value.replace(/[^a-zA-Z]/g, "").slice(0, 5))}
-                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 font-mono uppercase tracking-widest text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                className="w-full rounded-lg border border-border bg-surface px-4 py-3 font-mono uppercase tracking-widest text-primary placeholder-placeholder outline-none focus:border-accent"
                 maxLength={5}
               />
               {error && <p className="text-sm text-red-400">{error}</p>}
@@ -154,7 +154,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleCreate}
                 disabled={loading || !name.trim() || word.length !== 5}
-                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)] disabled:opacity-50"
+                className="w-full rounded-lg bg-accent py-3 font-semibold text-background transition-all hover:opacity-90 hover:shadow-[0_0_18px_var(--color-accent-glow)] disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create & Share"}
               </motion.button>
@@ -169,24 +169,24 @@ export default function Home() {
             >
               <button
                 onClick={() => { setMode("home"); setError(""); }}
-                className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]"
+                className="text-sm text-secondary hover:text-primary"
               >
                 ← Back
               </button>
-              <h2 className="text-xl font-bold text-[#E8E8E8]">Join Game</h2>
+              <h2 className="text-xl font-bold text-primary">Join Game</h2>
               <input
                 type="text"
                 placeholder="Enter game code"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6))}
-                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 font-mono text-center text-2xl uppercase tracking-[0.3em] text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                className="w-full rounded-lg border border-border bg-surface px-4 py-3 font-mono text-center text-2xl uppercase tracking-[0.3em] text-primary placeholder-placeholder outline-none focus:border-accent"
                 maxLength={6}
               />
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={handleJoin}
                 disabled={joinCode.length < 4}
-                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)] disabled:opacity-50"
+                className="w-full rounded-lg bg-accent py-3 font-semibold text-background transition-all hover:opacity-90 hover:shadow-[0_0_18px_var(--color-accent-glow)] disabled:opacity-50"
               >
                 Join
               </motion.button>
@@ -199,15 +199,15 @@ export default function Home() {
               className="space-y-6 text-center"
             >
               <div>
-                <h2 className="text-xl font-bold text-[#E8E8E8]">Challenge Created!</h2>
-                <p className="mt-1 text-sm text-[#8B8B8B]">
+                <h2 className="text-xl font-bold text-primary">Challenge Created!</h2>
+                <p className="mt-1 text-sm text-secondary">
                   Share this link with your friends
                 </p>
               </div>
 
-              <div className="rounded-xl border border-[#2A2A2E] bg-[#141416] p-6">
-                <p className="mb-1 text-xs text-[#8B8B8B]">Game Code</p>
-                <p className="font-mono text-3xl font-bold tracking-[0.2em] text-[#D4A574]">
+              <div className="rounded-xl border border-border bg-surface p-6">
+                <p className="mb-1 text-xs text-secondary">Game Code</p>
+                <p className="font-mono text-3xl font-bold tracking-[0.2em] text-accent">
                   {createdCode}
                 </p>
               </div>
@@ -215,7 +215,7 @@ export default function Home() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={copyLink}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)]"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent py-3 font-semibold text-background transition-all hover:opacity-90 hover:shadow-[0_0_18px_var(--color-accent-glow)]"
               >
                 {copied ? (
                   <>
@@ -236,7 +236,7 @@ export default function Home() {
                   setWord("");
                   setCreatedCode("");
                 }}
-                className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]"
+                className="text-sm text-secondary hover:text-primary"
               >
                 ← Create Another
               </button>

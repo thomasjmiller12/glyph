@@ -22,7 +22,7 @@ function ScoreDot({ result, isCurrent }: { result?: RoundResult; isCurrent: bool
     return (
       <div
         className={`h-3 w-3 rounded-full border ${
-          isCurrent ? "border-[#D4A574]" : "border-[#3A3A3E]"
+          isCurrent ? "border-accent" : "border-error"
         }`}
       />
     );
@@ -32,11 +32,11 @@ function ScoreDot({ result, isCurrent }: { result?: RoundResult; isCurrent: bool
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 1, repeat: Infinity }}
-        className="h-3 w-3 rounded-full bg-[#D4A574]"
+        className="h-3 w-3 rounded-full bg-accent"
       />
     );
   }
-  return <div className="h-3 w-3 rounded-full bg-[#6BCB77]" />;
+  return <div className="h-3 w-3 rounded-full bg-success" />;
 }
 
 export default function DuelScoreboard({
@@ -54,16 +54,14 @@ export default function DuelScoreboard({
     .reduce((sum, r) => sum + r.guestGuesses, 0);
 
   return (
-    <div className="flex items-center gap-6 rounded-xl border border-[#2A2A2E] bg-[#141416] p-4">
-      {/* Host */}
+    <div className="flex items-center gap-6 rounded-xl border border-border bg-surface p-4">
       <div className="flex-1 text-center">
-        <p className="text-sm font-medium text-[#E8E8E8]">{hostName}</p>
-        <p className="font-mono text-2xl font-bold text-[#D4A574]">{hostTotal}</p>
+        <p className="text-sm font-medium text-primary">{hostName}</p>
+        <p className="font-mono text-2xl font-bold text-accent">{hostTotal}</p>
       </div>
 
-      {/* Round dots */}
       <div className="flex flex-col items-center gap-1">
-        <p className="text-xs text-[#8B8B8B]">Round {currentRound}/{totalRounds}</p>
+        <p className="text-xs text-secondary">Round {currentRound}/{totalRounds}</p>
         <div className="flex gap-1.5">
           {Array.from({ length: totalRounds }, (_, i) => (
             <ScoreDot
@@ -75,10 +73,9 @@ export default function DuelScoreboard({
         </div>
       </div>
 
-      {/* Guest */}
       <div className="flex-1 text-center">
-        <p className="text-sm font-medium text-[#E8E8E8]">{guestName}</p>
-        <p className="font-mono text-2xl font-bold text-[#D4A574]">{guestTotal}</p>
+        <p className="text-sm font-medium text-primary">{guestName}</p>
+        <p className="font-mono text-2xl font-bold text-accent">{guestTotal}</p>
       </div>
     </div>
   );
