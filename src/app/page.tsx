@@ -1,64 +1,188 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { motion } from "framer-motion";
+import { ArrowRight, Swords, Plus } from "lucide-react";
+import Nav from "@/components/Nav";
+import { getSessionId } from "@/lib/session";
 
 export default function Home() {
+  const router = useRouter();
+  const createGame = useMutation(api.games.createGame);
+
+  const [mode, setMode] = useState<"home" | "create" | "join">("home");
+  const [name, setName] = useState("");
+  const [word, setWord] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleCreate() {
+    if (!name.trim() || !word.trim()) return;
+    if (word.length !== 5) {
+      setError("Word must be exactly 5 letters");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const result = await createGame({
+        creatorName: name.trim(),
+        secretWord: word.toLowerCase().trim(),
+        sessionId: getSessionId(),
+      });
+      router.push(`/play/${result.code}`);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to create game");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleJoin() {
+    if (!joinCode.trim()) return;
+    router.push(`/play/${joinCode.trim().toUpperCase()}`);
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="flex min-h-dvh flex-col bg-[#0A0A0B]">
+      <Nav />
+      <main className="flex flex-1 flex-col items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          {/* Hero */}
+          <div className="mb-12 text-center">
+            <h1 className="mb-2 font-mono text-5xl font-bold tracking-tight text-[#E8E8E8]">
+              GLYPH
+            </h1>
+            <p className="text-lg text-[#8B8B8B]">Five letters. One winner.</p>
+          </div>
+
+          {mode === "home" && (
+            <div className="space-y-3">
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setMode("create")}
+                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+              >
+                <div>
+                  <p className="font-medium text-[#E8E8E8]">Create Challenge</p>
+                  <p className="text-sm text-[#8B8B8B]">
+                    Pick a word for your friends to guess
+                  </p>
+                </div>
+                <Plus size={20} className="text-[#D4A574]" />
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setMode("join")}
+                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+              >
+                <div>
+                  <p className="font-medium text-[#E8E8E8]">Join Game</p>
+                  <p className="text-sm text-[#8B8B8B]">
+                    Enter a code to play a challenge
+                  </p>
+                </div>
+                <ArrowRight size={20} className="text-[#D4A574]" />
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => router.push("/duel")}
+                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+              >
+                <div>
+                  <p className="font-medium text-[#E8E8E8]">Duel Mode</p>
+                  <p className="text-sm text-[#8B8B8B]">
+                    Head-to-head competitive play
+                  </p>
+                </div>
+                <Swords size={20} className="text-[#D4A574]" />
+              </motion.button>
+            </div>
+          )}
+
+          {mode === "create" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-4"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              <button
+                onClick={() => { setMode("home"); setError(""); }}
+                className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]"
+              >
+                ← Back
+              </button>
+              <h2 className="text-xl font-bold text-[#E8E8E8]">Create Challenge</h2>
+              <input
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                maxLength={20}
+              />
+              <input
+                type="text"
+                placeholder="Pick a 5-letter word"
+                value={word}
+                onChange={(e) => setWord(e.target.value.replace(/[^a-zA-Z]/g, "").slice(0, 5))}
+                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 font-mono uppercase tracking-widest text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                maxLength={5}
+              />
+              {error && <p className="text-sm text-red-400">{error}</p>}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={handleCreate}
+                disabled={loading || !name.trim() || word.length !== 5}
+                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {loading ? "Creating..." : "Create & Share"}
+              </motion.button>
+            </motion.div>
+          )}
+
+          {mode === "join" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-4"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+              <button
+                onClick={() => { setMode("home"); setError(""); }}
+                className="text-sm text-[#8B8B8B] hover:text-[#E8E8E8]"
+              >
+                ← Back
+              </button>
+              <h2 className="text-xl font-bold text-[#E8E8E8]">Join Game</h2>
+              <input
+                type="text"
+                placeholder="Enter game code"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6))}
+                className="w-full rounded-lg border border-[#2A2A2E] bg-[#141416] px-4 py-3 font-mono text-center text-2xl uppercase tracking-[0.3em] text-[#E8E8E8] placeholder-[#5A5A5E] outline-none focus:border-[#D4A574]"
+                maxLength={6}
+              />
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={handleJoin}
+                disabled={joinCode.length < 4}
+                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                Join
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
       </main>
     </div>
   );

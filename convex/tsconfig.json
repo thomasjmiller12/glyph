@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "strict": true,
+    "target": "ESNext",
+    "lib": ["ES2021", "dom"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": { "@/*": ["../src/*"] },
+    "outDir": "../.convex-build",
+    "skipLibCheck": true
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "../node_modules/.generated/server/index.d.ts"],
+  "exclude": ["../.next", "../node_modules", "./_generated"]
+}
