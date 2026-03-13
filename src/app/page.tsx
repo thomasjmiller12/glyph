@@ -68,7 +68,7 @@ export default function Home() {
         >
           {/* Hero */}
           <div className="mb-12 text-center">
-            <h1 className="mb-2 font-mono text-5xl font-bold tracking-tight text-[#E8E8E8]">
+            <h1 className="logo-shimmer mb-2 font-mono text-5xl font-bold tracking-tight">
               GLYPH
             </h1>
             <p className="text-lg text-[#8B8B8B]">Five letters. One winner.</p>
@@ -79,7 +79,7 @@ export default function Home() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setMode("create")}
-                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+                className="group flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-all duration-300 hover:border-[#D4A574]/60 hover:shadow-[0_0_20px_rgba(212,165,116,0.12)]"
               >
                 <div>
                   <p className="font-medium text-[#E8E8E8]">Create Challenge</p>
@@ -87,13 +87,13 @@ export default function Home() {
                     Pick a word for your friends to guess
                   </p>
                 </div>
-                <Plus size={20} className="text-[#D4A574]" />
+                <Plus size={20} className="text-[#D4A574] transition-transform duration-300 group-hover:scale-110" />
               </motion.button>
 
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setMode("join")}
-                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+                className="group flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-all duration-300 hover:border-[#D4A574]/60 hover:shadow-[0_0_20px_rgba(212,165,116,0.12)]"
               >
                 <div>
                   <p className="font-medium text-[#E8E8E8]">Join Game</p>
@@ -101,13 +101,13 @@ export default function Home() {
                     Enter a code to play a challenge
                   </p>
                 </div>
-                <ArrowRight size={20} className="text-[#D4A574]" />
+                <ArrowRight size={20} className="text-[#D4A574] transition-transform duration-300 group-hover:translate-x-0.5" />
               </motion.button>
 
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => router.push("/duel")}
-                className="flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-colors hover:border-[#D4A574]"
+                className="group flex w-full items-center justify-between rounded-xl border border-[#2A2A2E] bg-[#141416] p-4 text-left transition-all duration-300 hover:border-[#D4A574]/60 hover:shadow-[0_0_20px_rgba(212,165,116,0.12)]"
               >
                 <div>
                   <p className="font-medium text-[#E8E8E8]">Duel Mode</p>
@@ -115,7 +115,7 @@ export default function Home() {
                     Head-to-head competitive play
                   </p>
                 </div>
-                <Swords size={20} className="text-[#D4A574]" />
+                <Swords size={20} className="text-[#D4A574] transition-transform duration-300 group-hover:scale-110" />
               </motion.button>
             </div>
           )}
@@ -154,7 +154,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleCreate}
                 disabled={loading || !name.trim() || word.length !== 5}
-                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)] disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create & Share"}
               </motion.button>
@@ -186,7 +186,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleJoin}
                 disabled={joinCode.length < 4}
-                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)] disabled:opacity-50"
               >
                 Join
               </motion.button>
@@ -215,7 +215,7 @@ export default function Home() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={copyLink}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)]"
               >
                 {copied ? (
                   <>

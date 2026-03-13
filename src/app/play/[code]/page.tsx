@@ -209,7 +209,7 @@ export default function PlayPage() {
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={copyLink}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)]"
             >
               {linkCopied ? (
                 <>
@@ -265,7 +265,7 @@ export default function PlayPage() {
               whileTap={{ scale: 0.98 }}
               onClick={handleJoin}
               disabled={!name.trim() || joining}
-              className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="w-full rounded-lg bg-[#D4A574] py-3 font-semibold text-[#0A0A0B] transition-all hover:opacity-90 hover:shadow-[0_0_18px_rgba(212,165,116,0.3)] disabled:opacity-50"
             >
               {joining ? "Joining..." : "Play"}
             </motion.button>
@@ -288,7 +288,7 @@ export default function PlayPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-lg bg-[#2A2A2E] px-4 py-2 text-sm text-[#E8E8E8]"
+              className="rounded-lg border border-[#3A3A3E]/50 bg-[#2A2A2E]/80 px-4 py-2 text-sm text-[#E8E8E8] shadow-[0_0_12px_rgba(0,0,0,0.3)] backdrop-blur-sm"
             >
               {error}
             </motion.div>

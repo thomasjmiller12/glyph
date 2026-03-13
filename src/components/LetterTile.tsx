@@ -12,6 +12,14 @@ const STATE_COLORS: Record<TileState, string> = {
   absent: "border-[#3A3A3E] bg-[#3A3A3E] text-[#8B8B8B]",
 };
 
+const STATE_GLOW: Record<TileState, string> = {
+  empty: "",
+  tbd: "",
+  correct: "0 0 14px rgba(107, 203, 119, 0.45), 0 0 4px rgba(107, 203, 119, 0.2)",
+  present: "0 0 14px rgba(212, 165, 116, 0.45), 0 0 4px rgba(212, 165, 116, 0.2)",
+  absent: "",
+};
+
 interface LetterTileProps {
   letter: string;
   state: TileState;
@@ -26,17 +34,21 @@ export default function LetterTile({
   isCurrentRow = false,
 }: LetterTileProps) {
   const isRevealed = state !== "empty" && state !== "tbd";
+  const glow = STATE_GLOW[state];
 
   return (
     <motion.div
-      className={`relative flex h-[58px] w-[58px] items-center justify-center border-2 font-mono text-2xl font-bold uppercase sm:h-[62px] sm:w-[62px] ${STATE_COLORS[state]}`}
+      className={`relative flex h-[58px] w-[58px] items-center justify-center border-2 font-mono text-2xl font-bold uppercase sm:h-[62px] sm:w-[62px] ${STATE_COLORS[state]} ${
+        isCurrentRow && !letter ? "tile-active-empty" : ""
+      }`}
       initial={false}
       animate={
         isCurrentRow && letter
-          ? { scale: [1, 1.08, 1] }
+          ? { scale: [1, 1.1, 1], borderColor: "rgba(212, 165, 116, 0.5)" }
           : isRevealed
             ? {
                 rotateX: [0, 90, 0],
+                boxShadow: ["0 0 0px transparent", "0 0 20px rgba(255,255,255,0.3)", glow || "0 0 0px transparent"],
                 transition: {
                   duration: 0.5,
                   delay,
@@ -46,7 +58,10 @@ export default function LetterTile({
             : {}
       }
       transition={{ duration: 0.1 }}
-      style={{ perspective: 500 }}
+      style={{
+        perspective: 500,
+        boxShadow: isRevealed ? glow : undefined,
+      }}
     >
       <motion.span
         animate={

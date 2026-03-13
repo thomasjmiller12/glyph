@@ -7,7 +7,7 @@ export default function Nav() {
     <nav className="flex h-14 items-center justify-between border-b border-[#2A2A2E] px-4">
       <Link
         href="/"
-        className="font-mono text-lg font-bold tracking-wider text-[#D4A574]"
+        className="logo-shimmer font-mono text-lg font-bold tracking-wider"
       >
         GLYPH
       </Link>

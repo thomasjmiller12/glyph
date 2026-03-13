@@ -40,14 +40,26 @@ export default function GameBoard({
         </div>
       );
     } else if (i === guesses.length) {
-      // Current input row — with shake animation on invalid guess
+      // Current input row — with shake + red glow on invalid guess
       rows.push(
         <motion.div
           key={i}
           className="flex gap-1.5"
           animate={
             shake
-              ? { x: [0, -10, 10, -10, 10, -5, 5, 0] }
+              ? {
+                  x: [0, -10, 10, -10, 10, -5, 5, 0],
+                  filter: [
+                    "drop-shadow(0 0 0px transparent)",
+                    "drop-shadow(0 0 8px rgba(239, 68, 68, 0.4))",
+                    "drop-shadow(0 0 8px rgba(239, 68, 68, 0.4))",
+                    "drop-shadow(0 0 8px rgba(239, 68, 68, 0.4))",
+                    "drop-shadow(0 0 8px rgba(239, 68, 68, 0.4))",
+                    "drop-shadow(0 0 4px rgba(239, 68, 68, 0.2))",
+                    "drop-shadow(0 0 2px rgba(239, 68, 68, 0.1))",
+                    "drop-shadow(0 0 0px transparent)",
+                  ],
+                }
               : {}
           }
           transition={{ duration: 0.4 }}

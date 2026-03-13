@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import ConvexProvider from "@/components/ConvexProvider";
+import AmbientParticles from "@/components/AmbientParticles";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <AmbientParticles />
         <ConvexProvider>{children}</ConvexProvider>
       </body>
     </html>

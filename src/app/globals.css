@@ -15,58 +15,113 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* ── Base styles (always dark) ── */
+/* ── Base styles ── */
 
-body {
-  background: var(--color-background);
-  color: var(--color-primary);
-  font-family: var(--font-sans), system-ui, sans-serif;
-  min-height: 100dvh;
-  overscroll-behavior: contain;
+@layer base {
+  body {
+    background: var(--color-background);
+    color: var(--color-primary);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    min-height: 100dvh;
+    overscroll-behavior: contain;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 40%, rgba(212, 165, 116, 0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 30% 70%, rgba(107, 203, 119, 0.03) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 70% 80%, rgba(212, 165, 116, 0.03) 0%, transparent 60%);
+    animation: ambientPulse 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes ambientPulse {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes flipOut {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(90deg); }
+  }
+
+  @keyframes flipIn {
+    0% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+
+  @keyframes tilePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes activeRowPulse {
+    0%, 100% { border-color: #3A3A3E; }
+    50% { border-color: rgba(212, 165, 116, 0.35); }
+  }
+
+  @keyframes particleFloat1 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0; }
+    10% { opacity: 0.15; }
+    90% { opacity: 0.15; }
+    100% { transform: translate(80px, -120vh) scale(0.5); opacity: 0; }
+  }
+
+  @keyframes particleFloat2 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0; }
+    10% { opacity: 0.12; }
+    90% { opacity: 0.12; }
+    100% { transform: translate(-60px, -120vh) scale(0.3); opacity: 0; }
+  }
+
+  @keyframes particleFloat3 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0; }
+    10% { opacity: 0.1; }
+    90% { opacity: 0.1; }
+    100% { transform: translate(40px, -120vh) scale(0.6); opacity: 0; }
+  }
 }
 
-/* ── Tile flip animation ── */
+/* ── Custom utility classes ── */
 
-@keyframes flipOut {
-  0% {
-    transform: rotateX(0deg);
-  }
-  100% {
-    transform: rotateX(90deg);
-  }
+@utility logo-shimmer {
+  background: linear-gradient(
+    90deg,
+    #D4A574 0%,
+    #D4A574 35%,
+    #f0d4a8 50%,
+    #D4A574 65%,
+    #D4A574 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
 }
 
-@keyframes flipIn {
-  0% {
-    transform: rotateX(90deg);
-  }
-  100% {
-    transform: rotateX(0deg);
-  }
-}
-
-.tile-flip-out {
+@utility tile-flip-out {
   animation: flipOut 0.25s ease-in forwards;
 }
 
-.tile-flip-in {
+@utility tile-flip-in {
   animation: flipIn 0.25s ease-out forwards;
 }
 
-/* ── Tile pop animation (letter entry) ── */
-
-@keyframes tilePop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.12);
-  }
-  100% {
-    transform: scale(1);
-  }
+@utility tile-pop {
+  animation: tilePop 0.1s ease-in-out;
 }
 
-.tile-pop {
-  animation: tilePop 0.1s ease-in-out;
+@utility tile-active-empty {
+  animation: activeRowPulse 2.5s ease-in-out infinite;
 }
