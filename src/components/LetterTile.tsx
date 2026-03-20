@@ -40,7 +40,7 @@ export default function LetterTile({
 
   return (
     <motion.div
-      className={`relative flex h-[58px] w-[58px] items-center justify-center border-2 font-mono text-2xl font-bold uppercase sm:h-[62px] sm:w-[62px] ${STATE_COLORS[state]} ${
+      className={`relative flex aspect-square w-[clamp(48px,14vw,62px)] items-center justify-center border-2 font-mono text-[clamp(1.1rem,4vw,1.5rem)] font-bold uppercase ${STATE_COLORS[state]} ${
         isCurrentRow && !letter ? "tile-active-empty" : ""
       }`}
       initial={false}

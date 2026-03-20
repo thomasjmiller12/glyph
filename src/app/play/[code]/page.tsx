@@ -274,9 +274,9 @@ export default function PlayPage() {
       )}
 
       {joinState === "playing" && (
-        <div className="flex flex-1 flex-col items-center justify-between gap-4 px-4 py-4">
+        <div className="flex flex-1 flex-col items-center px-2 pb-2 pt-2 sm:px-4 sm:pb-4">
           {/* Header info */}
-          <div className="text-center">
+          <div className="mb-1 text-center">
             <p className="text-xs text-secondary">
               Challenge by {game.game.creatorName}
             </p>
@@ -288,27 +288,31 @@ export default function PlayPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-lg border border-error/50 bg-border/80 px-4 py-2 text-sm text-primary shadow-[0_0_12px_rgba(0,0,0,0.3)] backdrop-blur-sm"
+              className="mb-1 rounded-lg border border-error/50 bg-border/80 px-4 py-2 text-sm text-primary shadow-[0_0_12px_rgba(0,0,0,0.3)] backdrop-blur-sm"
             >
               {error}
             </motion.div>
           )}
 
-          {/* Game board */}
-          <GameBoard
-            key={shakeKey}
-            guesses={guesses}
-            currentGuess={currentGuess}
-            maxAttempts={game.game.maxAttempts}
-            shake={shaking}
-          />
+          {/* Game board — centered in remaining space */}
+          <div className="flex flex-1 items-center">
+            <GameBoard
+              key={shakeKey}
+              guesses={guesses}
+              currentGuess={currentGuess}
+              maxAttempts={game.game.maxAttempts}
+              shake={shaking}
+            />
+          </div>
 
-          {/* Keyboard */}
-          <Keyboard
-            letterStates={letterStates}
-            onKey={handleKey}
-            disabled={isGameOver}
-          />
+          {/* Keyboard — pinned to bottom */}
+          <div className="mt-auto flex w-full justify-center pt-2">
+            <Keyboard
+              letterStates={letterStates}
+              onKey={handleKey}
+              disabled={isGameOver}
+            />
+          </div>
         </div>
       )}
 

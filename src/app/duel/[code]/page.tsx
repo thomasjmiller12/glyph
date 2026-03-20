@@ -317,7 +317,7 @@ export default function DuelGamePage() {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <Nav />
-      <div className="flex flex-1 flex-col items-center justify-between gap-4 px-4 py-4">
+      <div className="flex flex-1 flex-col items-center px-2 pb-2 pt-2 sm:px-4 sm:pb-4">
         <DuelScoreboard
           hostName={duel.duel.hostName}
           guestName={duel.duel.guestName ?? "Guest"}
@@ -330,7 +330,7 @@ export default function DuelGamePage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-lg bg-border px-4 py-2 text-sm text-primary"
+            className="mt-1 rounded-lg bg-border px-4 py-2 text-sm text-primary"
           >
             {error}
           </motion.div>
@@ -342,12 +342,16 @@ export default function DuelGamePage() {
           </div>
         ) : (
           <>
-            <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
-            <Keyboard
-              letterStates={letterStates}
-              onKey={handleKey}
-              disabled={isRoundOver}
-            />
+            <div className="flex flex-1 items-center">
+              <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
+            </div>
+            <div className="mt-auto flex w-full justify-center pt-2">
+              <Keyboard
+                letterStates={letterStates}
+                onKey={handleKey}
+                disabled={isRoundOver}
+              />
+            </div>
           </>
         )}
       </div>
