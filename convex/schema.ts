@@ -104,4 +104,12 @@ export default defineSchema({
   })
     .index("by_duel", ["duelId"])
     .index("by_duel_round", ["duelId", "roundNumber"]),
+
+  duel_messages: defineTable({
+    duelId: v.id("duels"),
+    sessionId: v.string(),
+    playerName: v.string(),
+    body: v.string(),
+    createdAt: v.number(),
+  }).index("by_duel_time", ["duelId", "createdAt"]),
 });

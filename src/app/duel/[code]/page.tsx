@@ -12,6 +12,7 @@ import DuelLobby from "@/components/DuelLobby";
 import DuelScoreboard from "@/components/DuelScoreboard";
 import OpponentProgress from "@/components/OpponentProgress";
 import DuelRecap from "@/components/DuelRecap";
+import DuelChat from "@/components/DuelChat";
 import { getSessionId } from "@/lib/session";
 import { aggregateLetterStates } from "@/lib/keyboard-state";
 
@@ -292,6 +293,7 @@ export default function DuelGamePage() {
             />
           )}
         </div>
+        {duelId && <DuelChat duelId={duelId} sessionId={sessionId} />}
       </div>
     );
   }
@@ -335,6 +337,7 @@ export default function DuelGamePage() {
             Submit Word
           </motion.button>
         </div>
+        {duelId && <DuelChat duelId={duelId} sessionId={sessionId} />}
       </div>
     );
   }
@@ -388,6 +391,7 @@ export default function DuelGamePage() {
           </>
         )}
       </div>
+      {duelId && <DuelChat duelId={duelId} sessionId={sessionId} />}
     </div>
   );
 }

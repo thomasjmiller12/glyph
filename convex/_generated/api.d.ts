@@ -8,9 +8,11 @@
  * @module
  */
 
+import type * as duelMessages from "../duelMessages.js";
 import type * as duels from "../duels.js";
 import type * as games from "../games.js";
 import type * as stats from "../stats.js";
+import type * as wordlist from "../wordlist.js";
 import type * as words from "../words.js";
 
 import type {
@@ -20,9 +22,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  duelMessages: typeof duelMessages;
   duels: typeof duels;
   games: typeof games;
   stats: typeof stats;
+  wordlist: typeof wordlist;
   words: typeof words;
 }>;
 
