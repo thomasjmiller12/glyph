@@ -448,6 +448,21 @@ export const getDuelRound = query({
       ? (round.guestGuessFeedback ?? [])
       : (round.hostGuessFeedback ?? []);
 
+    // In pick_words mode, you already know the word your opponent is solving
+    // (you picked it), so showing their actual guesses reveals nothing new.
+    const opponentGuessWordsLive =
+      duel.mode === "pick_words"
+        ? (isHost ? (round.guestGuessWords ?? []) : (round.hostGuessWords ?? []))
+        : undefined;
+
+    // When round is completed, expose full guess data for recap
+    const completedData = round.status === "completed" ? {
+      myGuessWords: isHost ? (round.hostGuessWords ?? []) : (round.guestGuessWords ?? []),
+      myGuessFeedback: isHost ? (round.hostGuessFeedback ?? []) : (round.guestGuessFeedback ?? []),
+      opponentGuessWords: isHost ? (round.guestGuessWords ?? []) : (round.hostGuessWords ?? []),
+      opponentGuessFeedback: isHost ? (round.guestGuessFeedback ?? []) : (round.hostGuessFeedback ?? []),
+    } : undefined;
+
     return {
       roundNumber: round.roundNumber,
       status: round.status,
@@ -458,6 +473,8 @@ export const getDuelRound = query({
       myPickedWord,
       hasPicked: isHost ? !!round.pickedByHost : !!round.pickedByGuest,
       opponentFeedback,
+      opponentGuessWordsLive,
+      ...completedData,
     };
   },
 });

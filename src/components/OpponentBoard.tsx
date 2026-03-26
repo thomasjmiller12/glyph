@@ -2,32 +2,42 @@
 
 import { motion } from "framer-motion";
 
-interface OpponentProgressProps {
+interface OpponentBoardProps {
   opponentName: string;
-  feedback: string[][]; // array of guess feedback (each is 5 colors)
+  words: string[];
+  feedback: string[][];
   maxAttempts: number;
+  pickedWord?: string;
   alwaysVisible?: boolean;
 }
 
-const COLOR_MAP: Record<string, string> = {
-  correct: "bg-success",
-  present: "bg-warning",
-  absent: "bg-error",
+const FEEDBACK_COLOR: Record<string, string> = {
+  correct: "border-success bg-success text-background",
+  present: "border-warning bg-warning text-background",
+  absent: "border-error bg-error text-error-text",
 };
 
-export default function OpponentProgress({
+export default function OpponentBoard({
   opponentName,
+  words,
   feedback,
   maxAttempts,
+  pickedWord,
   alwaysVisible = false,
-}: OpponentProgressProps) {
+}: OpponentBoardProps) {
   return (
     <div className={`${alwaysVisible ? "flex" : "hidden lg:flex"} flex-col items-center gap-2`}>
       <p className="text-xs text-secondary font-medium">{opponentName}</p>
+      {pickedWord && (
+        <p className="font-mono text-xs uppercase tracking-widest text-accent">
+          solving: {pickedWord}
+        </p>
+      )}
       <div className="flex flex-col gap-1">
         {Array.from({ length: maxAttempts }, (_, i) => {
+          const word = words[i];
           const guessFeedback = feedback[i];
-          if (guessFeedback) {
+          if (word && guessFeedback) {
             return (
               <motion.div
                 key={i}
@@ -36,11 +46,13 @@ export default function OpponentProgress({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                {guessFeedback.map((f, j) => (
+                {word.split("").map((letter, j) => (
                   <div
                     key={j}
-                    className={`h-3 w-3 rounded-sm ${COLOR_MAP[f] ?? "bg-border"}`}
-                  />
+                    className={`flex h-7 w-7 items-center justify-center border font-mono text-xs font-bold uppercase ${FEEDBACK_COLOR[guessFeedback[j]] ?? "border-border bg-transparent"}`}
+                  >
+                    {letter}
+                  </div>
                 ))}
               </motion.div>
             );
@@ -50,7 +62,7 @@ export default function OpponentProgress({
               {Array.from({ length: 5 }, (_, j) => (
                 <div
                   key={j}
-                  className="h-3 w-3 rounded-sm border border-border/30"
+                  className="h-7 w-7 border border-border/30"
                 />
               ))}
             </div>

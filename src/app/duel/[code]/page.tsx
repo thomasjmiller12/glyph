@@ -12,6 +12,8 @@ import DuelLobby from "@/components/DuelLobby";
 import DuelScoreboard from "@/components/DuelScoreboard";
 import OpponentProgress from "@/components/OpponentProgress";
 import DuelRecap from "@/components/DuelRecap";
+import InterRoundRecap from "@/components/InterRoundRecap";
+import OpponentBoard from "@/components/OpponentBoard";
 import DuelChat from "@/components/DuelChat";
 import { getSessionId } from "@/lib/session";
 import { aggregateLetterStates } from "@/lib/keyboard-state";
@@ -42,6 +44,9 @@ export default function DuelGamePage() {
   const [guessHistory, setGuessHistory] = useState<Record<number, LocalGuess[]>>({});
   const [roundDone, setRoundDone] = useState<Record<number, boolean>>({});
 
+  // Inter-round recap state
+  const [recapRound, setRecapRound] = useState<number | null>(null);
+
   const isHost = duel?.duel?.hostId === sessionId;
   const isGuest = duel?.duel?.guestId === sessionId;
   const isPlayer = isHost || isGuest;
@@ -53,6 +58,14 @@ export default function DuelGamePage() {
     api.duels.getDuelRound,
     duelId && currentRound > 0 && isPlayer
       ? { duelId, roundNumber: currentRound, sessionId }
+      : "skip"
+  );
+
+  // Previous round data for inter-round recap
+  const prevRoundData = useQuery(
+    api.duels.getDuelRound,
+    duelId && recapRound && isPlayer
+      ? { duelId, roundNumber: recapRound, sessionId }
       : "skip"
   );
 
@@ -70,13 +83,20 @@ export default function DuelGamePage() {
     (r) => r.roundNumber === currentRound
   );
   const isPicking = currentRoundData?.status === "picking";
+  const isPickWords = duel?.duel?.mode === "pick_words";
+  const myPickedWord = roundData?.myPickedWord;
 
-  // Reset guesses when round changes
-  const prevRound = useRef(currentRound);
+  // When round changes, trigger inter-round recap
+  const prevRoundRef = useRef(currentRound);
   useEffect(() => {
-    if (currentRound !== prevRound.current) {
-      prevRound.current = currentRound;
+    if (currentRound !== prevRoundRef.current) {
+      const prev = prevRoundRef.current;
+      prevRoundRef.current = currentRound;
       setCurrentGuess("");
+      // Show recap of the just-completed round (only if it was a real round)
+      if (prev > 0 && currentRound > prev) {
+        setRecapRound(prev);
+      }
     }
   }, [currentRound]);
 
@@ -344,6 +364,37 @@ export default function DuelGamePage() {
     );
   }
 
+  const opponentName = isHost ? (duel.duel.guestName ?? "Guest") : duel.duel.hostName;
+  const myName = isHost ? duel.duel.hostName : (duel.duel.guestName ?? "Guest");
+
+  // Inter-round recap screen
+  if (recapRound && prevRoundData?.status === "completed" && !isDuelOver) {
+    return (
+      <div className="flex min-h-dvh flex-col bg-background">
+        <Nav />
+        <DuelScoreboard
+          hostName={duel.duel.hostName}
+          guestName={duel.duel.guestName ?? "Guest"}
+          rounds={roundsForScoreboard}
+          currentRound={currentRound}
+          totalRounds={duel.duel.totalRounds}
+        />
+        <InterRoundRecap
+          roundNumber={recapRound}
+          targetWord={prevRoundData.targetWord ?? "?????"}
+          myName={myName}
+          opponentName={opponentName}
+          myGuessWords={prevRoundData.myGuessWords ?? []}
+          myGuessFeedback={prevRoundData.myGuessFeedback ?? []}
+          opponentGuessWords={prevRoundData.opponentGuessWords ?? []}
+          opponentGuessFeedback={prevRoundData.opponentGuessFeedback ?? []}
+          onDone={() => setRecapRound(null)}
+        />
+        {duelId && <DuelChat duelId={duelId} sessionId={sessionId} />}
+      </div>
+    );
+  }
+
   // Playing phase
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -368,21 +419,57 @@ export default function DuelGamePage() {
         )}
 
         {isRoundOver ? (
-          <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4">
             <p className="text-secondary">Waiting for opponent to finish...</p>
+            <div className="flex items-start gap-8">
+              <div className="flex flex-col items-center gap-1.5">
+                <p className="text-xs font-medium text-secondary">{myName}</p>
+                <GameBoard guesses={myGuesses} currentGuess="" maxAttempts={6} />
+              </div>
+              {isPickWords && roundData?.opponentGuessWordsLive && roundData.opponentFeedback ? (
+                <OpponentBoard
+                  opponentName={opponentName}
+                  words={roundData.opponentGuessWordsLive}
+                  feedback={roundData.opponentFeedback}
+                  maxAttempts={6}
+                  pickedWord={myPickedWord}
+                  alwaysVisible
+                />
+              ) : roundData?.opponentFeedback && roundData.opponentFeedback.length > 0 ? (
+                <OpponentProgress
+                  opponentName={opponentName}
+                  feedback={roundData.opponentFeedback}
+                  maxAttempts={6}
+                  alwaysVisible
+                />
+              ) : null}
+            </div>
           </div>
         ) : (
           <>
             <div className="flex flex-1 items-center justify-center gap-8">
               <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
-              {roundData?.opponentFeedback && (
+              {isPickWords && roundData?.opponentGuessWordsLive && roundData.opponentFeedback ? (
+                <OpponentBoard
+                  opponentName={opponentName}
+                  words={roundData.opponentGuessWordsLive}
+                  feedback={roundData.opponentFeedback}
+                  maxAttempts={6}
+                  pickedWord={myPickedWord}
+                />
+              ) : roundData?.opponentFeedback && (
                 <OpponentProgress
-                  opponentName={isHost ? (duel.duel.guestName ?? "Guest") : duel.duel.hostName}
+                  opponentName={opponentName}
                   feedback={roundData.opponentFeedback}
                   maxAttempts={6}
                 />
               )}
             </div>
+            {myPickedWord && isPickWords && (
+              <p className="mt-1 text-xs text-secondary">
+                You picked: <span className="font-mono uppercase tracking-widest text-accent">{myPickedWord}</span>
+              </p>
+            )}
             <div className="mt-auto flex w-full justify-center pt-2">
               <Keyboard
                 letterStates={letterStates}
