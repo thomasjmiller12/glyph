@@ -15,6 +15,7 @@ export default function DuelPage() {
   const [view, setView] = useState<"home" | "create" | "join">("home");
   const [name, setName] = useState("");
   const [mode, setMode] = useState<"same_word" | "pick_words">("same_word");
+  const [pressureTimer, setPressureTimer] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ export default function DuelPage() {
         hostName: name.trim(),
         sessionId: getSessionId(),
         mode,
+        pressureTimer,
       });
       router.push(`/duel/${result.code}`);
     } catch (e: unknown) {
@@ -125,6 +127,31 @@ export default function DuelPage() {
                   </button>
                 </div>
               </div>
+
+              <button
+                onClick={() => setPressureTimer(!pressureTimer)}
+                className={`flex w-full items-center justify-between rounded-lg border p-3 text-left text-sm transition-colors ${
+                  pressureTimer
+                    ? "border-accent bg-accent/10 text-primary"
+                    : "border-border bg-surface text-secondary"
+                }`}
+              >
+                <div>
+                  <p className="font-medium">Pressure Timer</p>
+                  <p className="text-xs opacity-70">60s countdown once someone finishes</p>
+                </div>
+                <div
+                  className={`flex h-6 w-11 items-center rounded-full px-0.5 transition-colors ${
+                    pressureTimer ? "bg-accent" : "bg-border"
+                  }`}
+                >
+                  <div
+                    className={`h-5 w-5 rounded-full bg-primary transition-transform ${
+                      pressureTimer ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </div>
+              </button>
 
               {error && <p className="text-sm text-red-400">{error}</p>}
               <motion.button

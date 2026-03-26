@@ -1,8 +1,12 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation, MutationCtx } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { Doc, Id } from "./_generated/dataModel";
 import { isValidWord, computeFeedback, getRandomAnswerWord } from "./words";
 
 const MAX_GUESSES_PER_ROUND = 6;
+const PRESSURE_TIMER_MS = 60_000;
+const PENALTY_SCORE = 7;
 
 /**
  * Generate a random 6-character alphanumeric code (uppercase).
@@ -16,6 +20,76 @@ function generateCode(): string {
   return code;
 }
 
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+async function advanceRound(
+  ctx: MutationCtx,
+  duel: Doc<"duels">,
+  roundId: Id<"duel_rounds">,
+  roundNumber: number,
+  finalHostGuesses: number,
+  finalGuestGuesses: number,
+) {
+  const duelId = duel._id;
+
+  if (roundNumber >= duel.totalRounds) {
+    // Duel is over — determine winner
+    const allRounds = await ctx.db
+      .query("duel_rounds")
+      .withIndex("by_duel", (q) => q.eq("duelId", duelId))
+      .collect();
+
+    let hostScore = 0;
+    let guestScore = 0;
+    for (const r of allRounds) {
+      const rh = r._id === roundId ? finalHostGuesses : r.hostGuesses;
+      const rg = r._id === roundId ? finalGuestGuesses : r.guestGuesses;
+      if (rh < rg) hostScore++;
+      else if (rg < rh) guestScore++;
+    }
+
+    const winnerId =
+      hostScore > guestScore
+        ? duel.hostId
+        : guestScore > hostScore
+          ? duel.guestId
+          : undefined;
+
+    await ctx.db.patch(duelId, {
+      status: "completed",
+      currentRound: roundNumber,
+      winnerId,
+    });
+  } else {
+    // Start next round
+    const nextRound = roundNumber + 1;
+    await ctx.db.patch(duelId, { currentRound: nextRound });
+
+    const now = Date.now();
+    if (duel.mode === "same_word") {
+      const nextWord = getRandomAnswerWord();
+      await ctx.db.insert("duel_rounds", {
+        duelId,
+        roundNumber: nextRound,
+        secretWord: nextWord,
+        hostGuesses: 0,
+        guestGuesses: 0,
+        status: "both_playing",
+        createdAt: now,
+      });
+    } else {
+      await ctx.db.insert("duel_rounds", {
+        duelId,
+        roundNumber: nextRound,
+        hostGuesses: 0,
+        guestGuesses: 0,
+        status: "picking",
+        createdAt: now,
+      });
+    }
+  }
+}
+
 // ── Mutations ────────────────────────────────────────────────────────────
 
 export const createDuel = mutation({
@@ -24,8 +98,9 @@ export const createDuel = mutation({
     sessionId: v.string(),
     mode: v.union(v.literal("same_word"), v.literal("pick_words")),
     totalRounds: v.optional(v.number()),
+    pressureTimer: v.optional(v.boolean()),
   },
-  handler: async (ctx, { hostName, sessionId, mode, totalRounds }) => {
+  handler: async (ctx, { hostName, sessionId, mode, totalRounds, pressureTimer }) => {
     let code = generateCode();
     for (let attempt = 0; attempt < 5; attempt++) {
       const existing = await ctx.db
@@ -45,6 +120,7 @@ export const createDuel = mutation({
       totalRounds: totalRounds ?? 3,
       currentRound: 0,
       status: "waiting",
+      pressureTimer: pressureTimer ?? false,
       createdAt: now,
     });
 
@@ -263,72 +339,36 @@ export const submitDuelGuess = mutation({
       if (hostDone && guestDone) {
         roundUpdates.status = "completed";
 
-        // Check if we need to start the next round or complete the duel
-        if (roundNumber >= duel.totalRounds) {
-          // Duel is over — determine winner
-          // Collect all rounds to compute scores
-          const allRounds = await ctx.db
-            .query("duel_rounds")
-            .withIndex("by_duel", (q) => q.eq("duelId", duelId))
-            .collect();
-
-          let hostScore = 0;
-          let guestScore = 0;
-          for (const r of allRounds) {
-            const rHostGuesses = r._id === round._id ? (isHost ? newGuessCount : r.hostGuesses) : r.hostGuesses;
-            const rGuestGuesses = r._id === round._id ? (isGuest ? newGuessCount : r.guestGuesses) : r.guestGuesses;
-            // Lower guesses = better. Player who used fewer guesses wins the round.
-            if (rHostGuesses < rGuestGuesses) hostScore++;
-            else if (rGuestGuesses < rHostGuesses) guestScore++;
-            // tie = no point
-          }
-
-          const winnerId =
-            hostScore > guestScore
-              ? duel.hostId
-              : guestScore > hostScore
-                ? duel.guestId
-                : undefined; // tie
-
-          await ctx.db.patch(duelId, {
-            status: "completed",
-            currentRound: roundNumber,
-            winnerId,
-          });
-        } else {
-          // Start next round
-          const nextRound = roundNumber + 1;
-          await ctx.db.patch(duelId, { currentRound: nextRound });
-
-          const now = Date.now();
-          if (duel.mode === "same_word") {
-            const nextWord = getRandomAnswerWord();
-            await ctx.db.insert("duel_rounds", {
-              duelId,
-              roundNumber: nextRound,
-              secretWord: nextWord,
-              hostGuesses: 0,
-              guestGuesses: 0,
-              status: "both_playing",
-              createdAt: now,
-            });
-          } else {
-            await ctx.db.insert("duel_rounds", {
-              duelId,
-              roundNumber: nextRound,
-              hostGuesses: 0,
-              guestGuesses: 0,
-              status: "picking",
-              createdAt: now,
-            });
-          }
+        // Cancel pressure timer if one was scheduled
+        if (round.pressureTimerJobId) {
+          await ctx.scheduler.cancel(round.pressureTimerJobId);
         }
+
+        const finalHost = isHost ? newGuessCount : round.hostGuesses;
+        const finalGuest = isGuest ? newGuessCount : round.guestGuesses;
+        await advanceRound(ctx, duel, round._id, roundNumber, finalHost, finalGuest);
       } else {
         // One player done, other still playing
         if (isHost) {
           roundUpdates.status = "guest_playing";
         } else {
           roundUpdates.status = "host_playing";
+        }
+
+        // Schedule pressure timer if enabled
+        if (duel.pressureTimer) {
+          const deadline = Date.now() + PRESSURE_TIMER_MS;
+          const jobId = await ctx.scheduler.runAfter(
+            PRESSURE_TIMER_MS,
+            internal.duels.expirePressureTimer,
+            {
+              roundId: round._id,
+              duelId,
+              expiredPlayer: isHost ? "guest" : "host",
+            }
+          );
+          roundUpdates.pressureDeadline = deadline;
+          roundUpdates.pressureTimerJobId = jobId;
         }
       }
     }
@@ -342,6 +382,34 @@ export const submitDuelGuess = mutation({
       playerDone,
       targetWord: playerDone ? targetWord : undefined,
     };
+  },
+});
+
+export const expirePressureTimer = internalMutation({
+  args: {
+    roundId: v.id("duel_rounds"),
+    duelId: v.id("duels"),
+    expiredPlayer: v.union(v.literal("host"), v.literal("guest")),
+  },
+  handler: async (ctx, { roundId, duelId, expiredPlayer }) => {
+    const round = await ctx.db.get(roundId);
+    if (!round || round.status === "completed") return;
+
+    const duel = await ctx.db.get(duelId);
+    if (!duel) return;
+
+    // Penalize the expired player with PENALTY_SCORE
+    const updates: Record<string, unknown> = { status: "completed" };
+    if (expiredPlayer === "host") {
+      updates.hostGuesses = PENALTY_SCORE;
+    } else {
+      updates.guestGuesses = PENALTY_SCORE;
+    }
+    await ctx.db.patch(roundId, updates);
+
+    const finalHost = expiredPlayer === "host" ? PENALTY_SCORE : round.hostGuesses;
+    const finalGuest = expiredPlayer === "guest" ? PENALTY_SCORE : round.guestGuesses;
+    await advanceRound(ctx, duel, roundId, round.roundNumber, finalHost, finalGuest);
   },
 });
 
@@ -374,6 +442,7 @@ export const getDuel = query({
         totalRounds: duel.totalRounds,
         currentRound: duel.currentRound,
         status: duel.status,
+        pressureTimer: duel.pressureTimer ?? false,
         createdAt: duel.createdAt,
       },
       rounds: rounds.map((r) => ({
@@ -474,6 +543,7 @@ export const getDuelRound = query({
       hasPicked: isHost ? !!round.pickedByHost : !!round.pickedByGuest,
       opponentFeedback,
       opponentGuessWordsLive,
+      pressureDeadline: round.pressureDeadline,
       ...completedData,
     };
   },

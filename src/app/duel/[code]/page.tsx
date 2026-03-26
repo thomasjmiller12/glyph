@@ -15,6 +15,7 @@ import DuelRecap from "@/components/DuelRecap";
 import InterRoundRecap from "@/components/InterRoundRecap";
 import OpponentBoard from "@/components/OpponentBoard";
 import DuelChat from "@/components/DuelChat";
+import PressureCountdown from "@/components/PressureCountdown";
 import { getSessionId } from "@/lib/session";
 import { aggregateLetterStates } from "@/lib/keyboard-state";
 
@@ -238,6 +239,7 @@ export default function DuelGamePage() {
             </h2>
             <p className="text-sm text-secondary">
               {duel.duel.mode === "same_word" ? "Same Word" : "Pick Words"} · Best of 3
+              {duel.duel.pressureTimer && " · Pressure Timer"}
             </p>
             <input
               type="text"
@@ -274,6 +276,7 @@ export default function DuelGamePage() {
           hostName={duel.duel.hostName}
           mode={duel.duel.mode}
           isHost={true}
+          pressureTimer={duel.duel.pressureTimer}
         />
       </div>
     );
@@ -421,6 +424,9 @@ export default function DuelGamePage() {
         {isRoundOver ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4">
             <p className="text-secondary">Waiting for opponent to finish...</p>
+            {roundData?.pressureDeadline && (
+              <PressureCountdown deadline={roundData.pressureDeadline} label="for opponent" />
+            )}
             <div className="flex items-start gap-8">
               <div className="flex flex-col items-center gap-1.5">
                 <p className="text-xs font-medium text-secondary">{myName}</p>
@@ -447,6 +453,9 @@ export default function DuelGamePage() {
           </div>
         ) : (
           <>
+            {roundData?.pressureDeadline && !isRoundOver && (
+              <PressureCountdown deadline={roundData.pressureDeadline} label="remaining" />
+            )}
             <div className="flex flex-1 items-center justify-center gap-8">
               <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
               {isPickWords && roundData?.opponentGuessWordsLive && roundData.opponentFeedback ? (

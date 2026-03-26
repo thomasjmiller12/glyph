@@ -10,6 +10,7 @@ interface DuelLobbyProps {
   guestName?: string;
   mode: string;
   isHost: boolean;
+  pressureTimer?: boolean;
 }
 
 export default function DuelLobby({
@@ -18,6 +19,7 @@ export default function DuelLobby({
   guestName,
   mode,
   isHost,
+  pressureTimer,
 }: DuelLobbyProps) {
   const [copied, setCopied] = useState(false);
 
@@ -34,6 +36,7 @@ export default function DuelLobby({
         <h1 className="mb-2 text-3xl font-bold text-primary">Duel Lobby</h1>
         <p className="text-sm text-secondary">
           {mode === "same_word" ? "Same Word" : "Pick Each Other's Words"} · Best of 3
+          {pressureTimer && " · Pressure Timer"}
         </p>
       </div>
 

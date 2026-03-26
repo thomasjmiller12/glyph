@@ -74,6 +74,7 @@ export default defineSchema({
       v.literal("completed")
     ),
     winnerId: v.optional(v.string()),
+    pressureTimer: v.optional(v.boolean()),
     createdAt: v.number(),
   })
     .index("by_code", ["code"])
@@ -92,6 +93,8 @@ export default defineSchema({
     hostGuessFeedback: v.optional(v.array(v.array(v.string()))),
     guestGuessWords: v.optional(v.array(v.string())),
     guestGuessFeedback: v.optional(v.array(v.array(v.string()))),
+    pressureDeadline: v.optional(v.number()),
+    pressureTimerJobId: v.optional(v.id("_scheduled_functions")),
     status: v.union(
       v.literal("picking"),
       v.literal("pending"),
