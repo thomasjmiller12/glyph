@@ -135,6 +135,8 @@ export default function DuelGamePage() {
     if (!isPlayingPhase) return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (e.key === "Enter") handleKey("enter");
       else if (e.key === "Backspace") handleKey("backspace");
       else if (/^[a-zA-Z]$/.test(e.key)) handleKey(e.key.toLowerCase());
