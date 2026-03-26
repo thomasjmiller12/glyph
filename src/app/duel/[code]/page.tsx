@@ -10,6 +10,8 @@ import GameBoard from "@/components/GameBoard";
 import Keyboard from "@/components/Keyboard";
 import DuelLobby from "@/components/DuelLobby";
 import DuelScoreboard from "@/components/DuelScoreboard";
+import OpponentProgress from "@/components/OpponentProgress";
+import DuelRecap from "@/components/DuelRecap";
 import { getSessionId } from "@/lib/session";
 import { aggregateLetterStates } from "@/lib/keyboard-state";
 
@@ -24,6 +26,7 @@ export default function DuelGamePage() {
   const sessionId = typeof window !== "undefined" ? getSessionId() : "";
 
   const duel = useQuery(api.duels.getDuel, { code });
+  const duelId = duel?.duel?._id;
   const joinDuel = useMutation(api.duels.joinDuel);
   const submitDuelGuess = useMutation(api.duels.submitDuelGuess);
   const pickWord = useMutation(api.duels.pickWord);
@@ -43,6 +46,20 @@ export default function DuelGamePage() {
   const isPlayer = isHost || isGuest;
   const currentRound = duel?.duel?.currentRound ?? 0;
   const isDuelOver = duel?.duel?.status === "completed";
+
+  // Live round data for opponent progress
+  const roundData = useQuery(
+    api.duels.getDuelRound,
+    duelId && currentRound > 0 && isPlayer
+      ? { duelId, roundNumber: currentRound, sessionId }
+      : "skip"
+  );
+
+  // Full results for recap when duel is over
+  const duelResults = useQuery(
+    api.duels.getDuelResults,
+    duelId && isDuelOver ? { duelId } : "skip"
+  );
 
   const myGuesses = guessHistory[currentRound] ?? [];
   const letterStates = aggregateLetterStates(myGuesses);
@@ -253,7 +270,7 @@ export default function DuelGamePage() {
     return (
       <div className="flex min-h-dvh flex-col bg-background">
         <Nav />
-        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
+        <div className="flex flex-1 flex-col items-center gap-6 px-4 pt-8 pb-8">
           <h2 className="text-3xl font-bold text-primary">Duel Complete!</h2>
           <DuelScoreboard
             hostName={duel.duel.hostName}
@@ -265,6 +282,15 @@ export default function DuelGamePage() {
           <p className="text-xl font-bold text-accent">
             {winner === "Tie" ? "It's a tie!" : `${winner} wins!`}
           </p>
+          {duelResults && (
+            <DuelRecap
+              hostName={duelResults.hostName}
+              guestName={duelResults.guestName ?? "Guest"}
+              hostId={duelResults.hostId}
+              rounds={duelResults.rounds}
+              mode={duel.duel.mode}
+            />
+          )}
         </div>
       </div>
     );
@@ -342,8 +368,15 @@ export default function DuelGamePage() {
           </div>
         ) : (
           <>
-            <div className="flex flex-1 items-center">
+            <div className="flex flex-1 items-center justify-center gap-8">
               <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
+              {roundData?.opponentFeedback && (
+                <OpponentProgress
+                  opponentName={isHost ? (duel.duel.guestName ?? "Guest") : duel.duel.hostName}
+                  feedback={roundData.opponentFeedback}
+                  maxAttempts={6}
+                />
+              )}
             </div>
             <div className="mt-auto flex w-full justify-center pt-2">
               <Keyboard

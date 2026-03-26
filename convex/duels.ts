@@ -232,12 +232,16 @@ export const submitDuelGuess = mutation({
     // in the round and return feedback. The client can track guess history locally,
     // and we validate server-side via guess counts.
 
-    // Update guess count
+    // Update guess count and store guess history
     const roundUpdates: Record<string, unknown> = {};
     if (isHost) {
       roundUpdates.hostGuesses = newGuessCount;
+      roundUpdates.hostGuessWords = [...(round.hostGuessWords ?? []), guess];
+      roundUpdates.hostGuessFeedback = [...(round.hostGuessFeedback ?? []), feedback];
     } else {
       roundUpdates.guestGuesses = newGuessCount;
+      roundUpdates.guestGuessWords = [...(round.guestGuessWords ?? []), guess];
+      roundUpdates.guestGuessFeedback = [...(round.guestGuessFeedback ?? []), feedback];
     }
 
     // Determine if this player is done
@@ -439,6 +443,11 @@ export const getDuelRound = query({
         : round.pickedByGuest ?? undefined;
     }
 
+    // Opponent's feedback (colors only, no words) — available live during play
+    const opponentFeedback = isHost
+      ? (round.guestGuessFeedback ?? [])
+      : (round.hostGuessFeedback ?? []);
+
     return {
       roundNumber: round.roundNumber,
       status: round.status,
@@ -448,6 +457,7 @@ export const getDuelRound = query({
       targetWord,
       myPickedWord,
       hasPicked: isHost ? !!round.pickedByHost : !!round.pickedByGuest,
+      opponentFeedback,
     };
   },
 });
@@ -486,6 +496,10 @@ export const getDuelResults = query({
         pickedByGuest: r.pickedByGuest,
         hostGuesses: r.hostGuesses,
         guestGuesses: r.guestGuesses,
+        hostGuessWords: r.hostGuessWords ?? [],
+        hostGuessFeedback: r.hostGuessFeedback ?? [],
+        guestGuessWords: r.guestGuessWords ?? [],
+        guestGuessFeedback: r.guestGuessFeedback ?? [],
         status: r.status,
         roundWinner,
       };

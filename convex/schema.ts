@@ -88,6 +88,10 @@ export default defineSchema({
     pickedByGuest: v.optional(v.string()),
     hostGuesses: v.number(),
     guestGuesses: v.number(),
+    hostGuessWords: v.optional(v.array(v.string())),
+    hostGuessFeedback: v.optional(v.array(v.array(v.string()))),
+    guestGuessWords: v.optional(v.array(v.string())),
+    guestGuessFeedback: v.optional(v.array(v.array(v.string()))),
     status: v.union(
       v.literal("picking"),
       v.literal("pending"),
