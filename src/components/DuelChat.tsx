@@ -34,7 +34,6 @@ export default function DuelChat({
   useEffect(() => {
     if (isOpen) {
       setLastSeenCount(messages.length);
-      inputRef.current?.focus();
     }
   }, [isOpen, messages.length]);
 
