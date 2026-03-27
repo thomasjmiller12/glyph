@@ -54,7 +54,7 @@ export default function DuelChat({
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface shadow-lg transition-all hover:bg-border active:scale-90"
+          className="fixed bottom-52 right-3 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface shadow-lg transition-all hover:bg-border active:scale-90 sm:bottom-5 sm:right-5"
           aria-label="Open chat"
         >
           <MessageCircle className="h-5 w-5 text-accent" />
@@ -74,7 +74,7 @@ export default function DuelChat({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-5 right-5 z-40 flex max-h-[50vh] w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xl sm:w-72"
+            className="fixed bottom-52 right-3 z-40 flex max-h-[40vh] w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xl sm:bottom-5 sm:right-5 sm:max-h-[50vh] sm:w-72"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-4 py-2.5">

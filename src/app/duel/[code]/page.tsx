@@ -427,7 +427,7 @@ export default function DuelGamePage() {
             {roundData?.pressureDeadline && (
               <PressureCountdown deadline={roundData.pressureDeadline} label="for opponent" />
             )}
-            <div className="flex items-start gap-8">
+            <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-start lg:gap-8">
               <div className="flex flex-col items-center gap-1.5">
                 <p className="text-xs font-medium text-secondary">{myName}</p>
                 <GameBoard guesses={myGuesses} currentGuess="" maxAttempts={6} />
@@ -456,7 +456,7 @@ export default function DuelGamePage() {
             {roundData?.pressureDeadline && !isRoundOver && (
               <PressureCountdown deadline={roundData.pressureDeadline} label="remaining" />
             )}
-            <div className="flex flex-1 items-center justify-center gap-8">
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 lg:flex-row lg:gap-8">
               <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
               {isPickWords && roundData?.opponentGuessWordsLive && roundData.opponentFeedback ? (
                 <OpponentBoard
@@ -465,12 +465,14 @@ export default function DuelGamePage() {
                   feedback={roundData.opponentFeedback}
                   maxAttempts={6}
                   pickedWord={myPickedWord}
+                  alwaysVisible
                 />
               ) : roundData?.opponentFeedback && (
                 <OpponentProgress
                   opponentName={opponentName}
                   feedback={roundData.opponentFeedback}
                   maxAttempts={6}
+                  alwaysVisible
                 />
               )}
             </div>
