@@ -75,6 +75,7 @@ export default defineSchema({
     ),
     winnerId: v.optional(v.string()),
     pressureTimer: v.optional(v.boolean()),
+    rematchCode: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_code", ["code"])

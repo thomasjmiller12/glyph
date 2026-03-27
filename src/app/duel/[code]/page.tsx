@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { motion } from "framer-motion";
@@ -24,8 +24,14 @@ interface LocalGuess {
   feedback: string[];
 }
 
+function cleanError(e: unknown): string {
+  const msg = e instanceof Error ? e.message : "Invalid word";
+  return msg.replace(/^\[CONVEX .*?\] /, "");
+}
+
 export default function DuelGamePage() {
   const params = useParams();
+  const router = useRouter();
   const code = (params.code as string).toUpperCase();
   const sessionId = typeof window !== "undefined" ? getSessionId() : "";
 
@@ -34,12 +40,15 @@ export default function DuelGamePage() {
   const joinDuel = useMutation(api.duels.joinDuel);
   const submitDuelGuess = useMutation(api.duels.submitDuelGuess);
   const pickWord = useMutation(api.duels.pickWord);
+  const requestRematch = useMutation(api.duels.requestRematch);
 
   const [name, setName] = useState("");
   const [joining, setJoining] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [pickingWord, setPickingWord] = useState("");
   const [error, setError] = useState("");
+  const [shake, setShake] = useState(false);
+  const [rematchLoading, setRematchLoading] = useState(false);
 
   // Track guesses client-side per round (keyed by round number)
   const [guessHistory, setGuessHistory] = useState<Record<number, LocalGuess[]>>({});
@@ -113,7 +122,8 @@ export default function DuelGamePage() {
       if (key === "enter") {
         if (currentGuess.length !== 5) {
           setError("Not enough letters");
-          setTimeout(() => setError(""), 1500);
+          setShake(true);
+          setTimeout(() => { setError(""); setShake(false); }, 1500);
           return;
         }
         try {
@@ -137,8 +147,10 @@ export default function DuelGamePage() {
           }
           setCurrentGuess("");
         } catch (e: unknown) {
-          setError(e instanceof Error ? e.message : "Invalid word");
-          setTimeout(() => setError(""), 2000);
+          const msg = cleanError(e);
+          setError(msg);
+          setShake(true);
+          setTimeout(() => { setError(""); setShake(false); }, 2000);
         }
         return;
       }
@@ -172,7 +184,7 @@ export default function DuelGamePage() {
     try {
       await joinDuel({ code, guestName: name.trim(), sessionId });
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to join");
+      setError(cleanError(e));
     } finally {
       setJoining(false);
     }
@@ -189,8 +201,20 @@ export default function DuelGamePage() {
       });
       setPickingWord("");
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Invalid word");
+      setError(cleanError(e));
       setTimeout(() => setError(""), 2000);
+    }
+  }
+
+  async function handleRematch() {
+    if (!duelId) return;
+    setRematchLoading(true);
+    try {
+      const result = await requestRematch({ duelId, sessionId });
+      router.push(`/duel/${result.code}`);
+    } catch (e: unknown) {
+      setError(cleanError(e));
+      setRematchLoading(false);
     }
   }
 
@@ -308,6 +332,31 @@ export default function DuelGamePage() {
           <p className="text-xl font-bold text-accent">
             {winner === "Tie" ? "It's a tie!" : `${winner} wins!`}
           </p>
+          {isPlayer && (
+            <div className="flex flex-col items-center gap-2">
+              {duel.duel.rematchCode && (
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-secondary"
+                >
+                  Opponent wants a rematch!
+                </motion.p>
+              )}
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleRematch}
+                disabled={rematchLoading}
+                className="rounded-lg bg-accent px-8 py-3 font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {rematchLoading
+                  ? "Creating..."
+                  : duel.duel.rematchCode
+                    ? "Join Rematch"
+                    : "Play Again"}
+              </motion.button>
+            </div>
+          )}
           {duelResults && (
             <DuelRecap
               hostName={duelResults.hostName}
@@ -457,7 +506,7 @@ export default function DuelGamePage() {
               <PressureCountdown deadline={roundData.pressureDeadline} label="remaining" />
             )}
             <div className="flex flex-1 flex-col items-center justify-center gap-2 lg:flex-row lg:gap-8">
-              <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} />
+              <GameBoard guesses={myGuesses} currentGuess={currentGuess} maxAttempts={6} shake={shake} />
               {isPickWords && roundData?.opponentGuessWordsLive && roundData.opponentFeedback ? (
                 <OpponentBoard
                   opponentName={opponentName}

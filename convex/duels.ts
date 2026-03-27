@@ -413,6 +413,57 @@ export const expirePressureTimer = internalMutation({
   },
 });
 
+export const requestRematch = mutation({
+  args: {
+    duelId: v.id("duels"),
+    sessionId: v.string(),
+  },
+  handler: async (ctx, { duelId, sessionId }) => {
+    const duel = await ctx.db.get(duelId);
+    if (!duel) throw new Error("Duel not found.");
+    if (duel.status !== "completed") throw new Error("Duel is not completed.");
+
+    const isHost = duel.hostId === sessionId;
+    const isGuest = duel.guestId === sessionId;
+    if (!isHost && !isGuest) throw new Error("You are not in this duel.");
+
+    // If rematch already created, just return the code
+    if (duel.rematchCode) {
+      return { code: duel.rematchCode };
+    }
+
+    // Create new duel with same settings, requestor is host
+    const myName = isHost ? duel.hostName : (duel.guestName ?? "Guest");
+    let code = generateCode();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const existing = await ctx.db
+        .query("duels")
+        .withIndex("by_code", (q) => q.eq("code", code))
+        .first();
+      if (!existing) break;
+      code = generateCode();
+    }
+
+    const now = Date.now();
+    await ctx.db.insert("duels", {
+      code,
+      mode: duel.mode,
+      hostId: sessionId,
+      hostName: myName,
+      totalRounds: duel.totalRounds,
+      currentRound: 0,
+      status: "waiting",
+      pressureTimer: duel.pressureTimer ?? false,
+      createdAt: now,
+    });
+
+    // Store rematch code on original duel
+    await ctx.db.patch(duelId, { rematchCode: code });
+
+    return { code };
+  },
+});
+
 // ── Queries ──────────────────────────────────────────────────────────────
 
 export const getDuel = query({
@@ -443,6 +494,7 @@ export const getDuel = query({
         currentRound: duel.currentRound,
         status: duel.status,
         pressureTimer: duel.pressureTimer ?? false,
+        rematchCode: duel.rematchCode,
         createdAt: duel.createdAt,
       },
       rounds: rounds.map((r) => ({
